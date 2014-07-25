@@ -11,7 +11,7 @@ $<.each_line do |line|
     if last_section == :effect
       cur[last_section] += "\n#{line.chomp}"
     else
-      cur[last_section] += "\n#{line.strip}"
+      cur[last_section] += "\n  #{line.strip}"
     end
   when /\A(\w+) - (.*)\z/
     instructions << cur if cur
@@ -26,6 +26,8 @@ $<.each_line do |line|
   end
 end
 
+instructions << cur
+
 #instructions.each do |inst|
   #tag = "#{inst[:mnemonic].downcase}---#{inst[:desc].downcase.gsub(' ', '-')}"
   #puts "- [#{inst[:mnemonic]} - #{inst[:desc]}](##{tag})"
@@ -39,4 +41,5 @@ instructions.each do |inst|
   puts "- Example: `#{inst[:example]}`" if inst[:example]
   puts "- Effect:\n~~~#{inst[:effect]}\n~~~"
   puts "- Notes: #{inst[:notes]}" if inst[:notes]
+  puts ""
 end
