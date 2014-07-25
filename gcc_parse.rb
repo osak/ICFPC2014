@@ -38,4 +38,5 @@ instructions.each do |inst|
   puts "- Syntax: `#{inst[:syntax]}`"
   puts "- Example: `#{inst[:example]}`" if inst[:example]
   puts "- Effect:\n~~~#{inst[:effect]}\n~~~"
+  puts "- Notes: #{inst[:notes]}" if inst[:notes]
 end
