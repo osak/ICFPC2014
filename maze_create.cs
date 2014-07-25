@@ -10,12 +10,13 @@ namespace MazeCreator
     {
         static void Main(string[] args)
         {
+            args = new string[] { "--w=10", "--h=10", "--s=1", "--o=fuga.txt" };
             var h = -1;
             var w = -1;
             int? s = null;
             string o = null;
             if (args.Length > 0)
-                processArgs(args, ref h, ref w, ref s,ref o);
+                processArgs(args, ref h, ref w, ref s, ref o);
             else
             {
                 var r = new Random();
@@ -34,8 +35,9 @@ namespace MazeCreator
                 using (var sw = new StreamWriter(o))
                     WriteMaze(maze, sw);
             }
-            else WriteMaze(maze,Console.Out);
+            else WriteMaze(maze, Console.Out);
         }
+        
         // --w=X : width=X
         // --h=X : height=X
         // --s=X : sead=X
@@ -82,7 +84,7 @@ namespace MazeCreator
             var h = maze.GetLength(0);
             var w = maze.GetLength(1);
             var sb = new StringBuilder();
-            var wall = new string('#', w + 2);
+            var wall = new string('#', w+2);
             sb.AppendLine(wall);
             for (int i = 0; i < h; i++)
             {
@@ -131,8 +133,8 @@ namespace MazeCreator
         public char[,] CreateMaze()
         {
             var size = determineSize();
-            var w = size.L;
-            var h = size.R;
+            var w = size.L-2;
+            var h = size.R-2;
             var maze = new char[h, w];
             putWall(maze);
             var start = determinePosition(maze);
