@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.IO;
 namespace MazeCreator
 {
     class maze_create
@@ -12,8 +13,9 @@ namespace MazeCreator
             var h = -1;
             var w = -1;
             int? s = null;
+            string o = null;
             if (args.Length > 0)
-                processArgs(args, ref h, ref w, ref s);
+                processArgs(args, ref h, ref w, ref s,ref o);
             else
             {
                 var r = new Random();
@@ -25,17 +27,25 @@ namespace MazeCreator
                 Console.Error.WriteLine("invalid input");
                 return;
             }
-
             var creator = new MazeCreator(h, w, s);
             var maze = creator.CreateMaze();
-            WriteMaze(maze);
-            Console.ReadKey(true);
+            if (o != null)
+            {
+                using (var sw = new StreamWriter(o))
+                    WriteMaze(maze, sw);
+            }
+            else WriteMaze(maze,Console.Out);
         }
-        static void processArgs(string[] args, ref int h, ref int w, ref int? s)
+        // --w=X : width=X
+        // --h=X : height=X
+        // --s=X : sead=X
+        // --o=X : outputFilePath=X
+        static void processArgs(string[] args, ref int h, ref int w, ref int? s,ref string o)
         {
             var width = new Regex(@"--w=(\d+)");
             var height = new Regex(@"--h=(\d+)");
             var sead = new Regex(@"--s=(\d+)");
+            var output = new Regex(@"--o=(.+)");
             foreach (var x in args)
             {
                 if (width.IsMatch(x))
@@ -53,6 +63,11 @@ namespace MazeCreator
                     var m = sead.Match(x);
                     s = int.Parse(m.Groups[1].Value);
                 }
+                else if (output.IsMatch(x))
+                {
+                    var m = output.Match(x);
+                    o = m.Groups[1].Value;
+                }
             }
 
         }
@@ -62,7 +77,7 @@ namespace MazeCreator
                 return false;
             else return true;
         }
-        static void WriteMaze(char[,] maze)
+        static void WriteMaze(char[,] maze,TextWriter writer)
         {
             var h = maze.GetLength(0);
             var w = maze.GetLength(1);
@@ -77,8 +92,9 @@ namespace MazeCreator
                 sb.Append('#');
                 sb.AppendLine();
             }
-            sb.AppendLine(wall);
-            Console.WriteLine(sb.ToString());
+            sb.Append(wall);
+            var output = sb.ToString();
+            writer.WriteLine(output);
         }
 
     }
@@ -98,7 +114,11 @@ namespace MazeCreator
                 this.Sead = sead.Value;
                 this.rand = new Random(Sead);
             }
-            else this.rand = new Random();
+            else
+            {
+                this.Sead = -1;
+                this.rand = new Random();
+            }
         }
 
         //迷路のレベル
@@ -118,7 +138,9 @@ namespace MazeCreator
             var start = determinePosition(maze);
             putPill(start, maze);
             maze[start.L, start.R] = '\\';
-
+            for (int i = 0; i < h; i++)
+                for (int j = 0; j < w; j++)
+                    if (maze[i, j] == '\0') maze[i, j] = ' ';
             return maze;
         }
 
