@@ -57,6 +57,8 @@ module GCC
           code.push(*compile_addressing_function(expr))
         elsif expr.args[0] == :set!
           code.push(*compile_set(expr))
+        elsif expr.args[0] == :begin
+          code.push(*compile_begin(expr))
         else
           expr.args[1..-1].each do |arg|
             code.push(*compile(arg))
@@ -161,6 +163,14 @@ module GCC
       code = compile(expr.args[2])
       spec = current_env.get(name)
       code << "ST #{spec[:frame]} #{spec[:index]}"
+      code
+    end
+
+    def compile_begin(expr)
+      code = []
+      expr.args[1..-1].each do |sub|
+        code.push(*compile(sub))
+      end
       code
     end
 
