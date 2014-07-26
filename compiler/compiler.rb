@@ -35,6 +35,14 @@ module GCC
         code << "CAR"
       when :cdr
         code << "CDR"
+      when :==
+        code << "CEQ"
+      when :<
+        code << "CGT"
+      when :<=
+        code << "CGTE"
+      when :atom?
+        code << "ATOM"
       end
 
       code
