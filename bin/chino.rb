@@ -11,6 +11,6 @@ end
 parser = GCC::Parser.new(File.open(ARGV[0]))
 compiler = GCC::Compiler.new
 ast = parser.parse
-prog = ast.map{|a| compiler.compile(a)}.compact
+ast.each{|a| compiler.register(a)}
 
-puts prog.join("\n")
+puts compiler.to_gcc.join("\n")
