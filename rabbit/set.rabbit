@@ -1,0 +1,2 @@
+(let ((seed 0))
+    (set! seed (+ 1 seed)))
