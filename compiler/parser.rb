@@ -1,3 +1,4 @@
+require 'stringio'
 require_relative 'expr'
 
 module GCC
@@ -38,7 +39,7 @@ module GCC
       else
         val = token
         case val
-        when /\A\d+\z/
+        when /\A-?\d+\z/
           val.to_i
         else
           val.to_sym

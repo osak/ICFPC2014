@@ -55,12 +55,16 @@ module GCC
       if expr.args[0].is_a?(Symbol)
         if ADDRESSING_FUNCTIONS.index(expr.args[0])
           code.push(*compile_addressing_function(expr))
+        elsif expr.args[0] == :set!
+          code.push(*compile_set(expr))
+        elsif expr.args[0] == :begin
+          code.push(*compile_begin(expr))
         else
           expr.args[1..-1].each do |arg|
             code.push(*compile(arg))
           end
 
-          if spec = current_env.get(expr.args[0])
+          if current_env && spec = current_env.get(expr.args[0])
             # User defined function
             # TODO: check is it really function
             code << "LD #{spec[:frame]} #{spec[:index]}"
@@ -89,6 +93,8 @@ module GCC
               code << "CGTE"
             when :atom?
               code << "ATOM"
+            else
+              raise "Unsupported function #{args[0]}"
             end
           end
         end
@@ -111,13 +117,13 @@ module GCC
         # first tuple is bind list
         binds, body = expr.args[1..-1]
         new_env do
+          code << "DUM #{binds.args.size}"
           binds.args.each_with_index do |bind, i|
             raise "Symbol is expected for let binding" unless bind.args[0].is_a?(Symbol)
-            code.push(*compile(bind.args[1]))
             current_env.put(bind.args[0], i)
+            code.push(*compile(bind.args[1]))
           end
           b = compile_subroutine(body, "RTN")
-          code << "DUM #{binds.args.size}"
           code << "LDF #{b}"
           code << "RAP #{binds.args.size}"
         end
@@ -150,6 +156,22 @@ module GCC
     def compile_variable(name)
       spec = current_env.get(name)
       ["LD #{spec[:frame]} #{spec[:index]}"]
+    end
+
+    def compile_set(expr)
+      name = expr.args[1]
+      code = compile(expr.args[2])
+      spec = current_env.get(name)
+      code << "ST #{spec[:frame]} #{spec[:index]}"
+      code
+    end
+
+    def compile_begin(expr)
+      code = []
+      expr.args[1..-1].each do |sub|
+        code.push(*compile(sub))
+      end
+      code
     end
 
     def current_env
