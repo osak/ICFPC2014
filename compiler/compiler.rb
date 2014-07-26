@@ -111,13 +111,13 @@ module GCC
         # first tuple is bind list
         binds, body = expr.args[1..-1]
         new_env do
+          code << "DUM #{binds.args.size}"
           binds.args.each_with_index do |bind, i|
             raise "Symbol is expected for let binding" unless bind.args[0].is_a?(Symbol)
-            code.push(*compile(bind.args[1]))
             current_env.put(bind.args[0], i)
+            code.push(*compile(bind.args[1]))
           end
           b = compile_subroutine(body, "RTN")
-          code << "DUM #{binds.args.size}"
           code << "LDF #{b}"
           code << "RAP #{binds.args.size}"
         end
