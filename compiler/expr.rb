@@ -1,6 +1,7 @@
 module GCC
   class Expression
-    attr_reader :name
+    attr_reader :name, :args
+
     def initialize(name, args)
       @name = name.to_sym
       @args = args.dup
