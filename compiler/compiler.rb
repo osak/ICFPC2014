@@ -4,6 +4,7 @@ module GCC
   class Compiler
     def initialize
       @subroutines = []
+      @lambda_env = {}
       @env = nil
     end
 
@@ -59,29 +60,36 @@ module GCC
             code.push(*compile(arg))
           end
 
-          case expr.args[0]
-          when :+
-            code << "ADD"
-          when :-
-            code << "SUB"
-          when :*
-            code << "MUL"
-          when :/
-            code << "DIV"
-          when :cons
-            code << "CONS"
-          when :car
-            code << "CAR"
-          when :cdr
-            code << "CDR"
-          when :==
-            code << "CEQ"
-          when :<
-            code << "CGT"
-          when :<=
-            code << "CGTE"
-          when :atom?
-            code << "ATOM"
+          if spec = current_env.get(expr.args[0])
+            # User defined function
+            # TODO: check is it really function
+            code << "LD #{spec[:frame]} #{spec[:index]}"
+            code << "AP #{expr.args.size - 1}"
+          else
+            case expr.args[0]
+            when :+
+              code << "ADD"
+            when :-
+              code << "SUB"
+            when :*
+              code << "MUL"
+            when :/
+              code << "DIV"
+            when :cons
+              code << "CONS"
+            when :car
+              code << "CAR"
+            when :cdr
+              code << "CDR"
+            when :==
+              code << "CEQ"
+            when :<
+              code << "CGT"
+            when :<=
+              code << "CGTE"
+            when :atom?
+              code << "ATOM"
+            end
           end
         end
         code
@@ -112,6 +120,18 @@ module GCC
           code << "DUM #{binds.args.size}"
           code << "LDF #{b}"
           code << "RAP #{binds.args.size}"
+        end
+      when :lambda
+        # specialized form
+        # first tuple is (args...)
+        args, body = expr.args[1..-1]
+        new_env do
+          args.args.each_with_index do |name, i|
+            current_env.put(name, i)
+          end
+          b = compile_subroutine(body, "RTN")
+          @lambda_env[b] = current_env
+          code << "LDF #{b}"
         end
       end
       code
