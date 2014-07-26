@@ -13,4 +13,4 @@ compiler = GCC::Compiler.new
 ast = parser.parse
 prog = ast.map{|a| compiler.compile(a)}.compact
 
-pp prog
+puts prog.join("\n")

@@ -29,6 +29,12 @@ module GCC
         code << "MUL"
       when :/
         code << "DIV"
+      when :cons
+        code << "CONS"
+      when :car
+        code << "CAR"
+      when :cdr
+        code << "CDR"
       end
 
       code
