@@ -92,7 +92,7 @@ module GCC
               code << "CAR"
             when :cdr
               code << "CDR"
-            when :==
+            when :"="
               code << "CEQ"
             when :<
               code << "CGT"
