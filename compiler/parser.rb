@@ -19,7 +19,7 @@ module GCC
       until eof?
         res << expr
       end
-      res
+      res.reject{|r| r == :""}
     end
 
     private
