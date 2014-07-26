@@ -1,7 +1,10 @@
+require_relative 'environment'
+
 module GCC
   class Compiler
     def initialize
       @subroutines = []
+      @env = nil
     end
 
     def register(obj)
@@ -41,6 +44,8 @@ module GCC
         compile_expression(obj)
       when Numeric
         compile_numeric(obj)
+      when Symbol
+        compile_variable(obj)
       end
     end
 
@@ -96,7 +101,18 @@ module GCC
       when :let
         # specialized form
         # first tuple is bind list
-        binds, body = expr.args
+        binds, body = expr.args[1..-1]
+        new_env do
+          binds.args.each_with_index do |bind, i|
+            raise "Symbol is expected for let binding" unless bind.args[0].is_a?(Symbol)
+            code.push(*compile(bind.args[1]))
+            current_env.put(bind.args[0], i)
+          end
+          b = compile_subroutine(body, "RTN")
+          code << "DUM #{binds.args.size}"
+          code << "LDF #{b}"
+          code << "RAP #{binds.args.size}"
+        end
       end
       code
     end
@@ -109,6 +125,22 @@ module GCC
 
     def compile_numeric(num)
       ["LDC #{num}"]
+    end
+
+    def compile_variable(name)
+      spec = current_env.get(name)
+      ["LD #{spec[:frame]} #{spec[:index]}"]
+    end
+
+    def current_env
+      @env
+    end
+
+    def new_env
+      prev_env = @env
+      @env = Environment.new(@env)
+      yield
+      @env = prev_env
     end
   end
 end

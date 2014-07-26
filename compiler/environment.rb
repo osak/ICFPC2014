@@ -5,8 +5,12 @@ module GCC
       @parent = parent
     end
 
+    def put(name, index)
+      @table[name] = index
+    end
+
     def get(name)
-      if idx = @table.fetch(name)
+      if idx = @table.fetch(name, nil)
         {frame: 0, index: idx}
       else
         res = @parent && @parent.get(name)
