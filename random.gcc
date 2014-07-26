@@ -1,0 +1,40 @@
+DUM  2        ; 2 top-level declarations
+LDC  2        ; declare constant down
+LDF  10; step     ; declare function step
+LDF  6;  init     ; init function
+RAP  2        ; load declarations into environment and run init
+RTN     ;;;;;; function init
+LDC  42
+LD   0 1      ; var step
+CONS
+RTN     ;;;;;; function step
+LD   0 0      ; var s
+LDF  29; rnd
+AP 1
+ST   0 0
+LD   0 0
+LD   0 0
+LDC  4
+LDF  21; mod
+AP   2
+CONS
+RTN     ;;;;;; function mod
+LD 0 0
+LD 0 0
+LD 0 1
+DIV
+LD 0 1
+MUL
+SUB
+RTN     ;;;;;; function rnd
+LD 0 0          ; x
+LDC 5           ; a
+MUL
+LDC 89219821    ; b
+ADD
+LDC 1000000007  ; m
+LDF 21;mod
+AP 2
+RTN
+
+
