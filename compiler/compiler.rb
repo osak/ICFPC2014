@@ -55,6 +55,8 @@ module GCC
       if expr.args[0].is_a?(Symbol)
         if ADDRESSING_FUNCTIONS.index(expr.args[0])
           code.push(*compile_addressing_function(expr))
+        elsif expr.args[0] == :set!
+          code.push(*compile_set(expr))
         else
           expr.args[1..-1].each do |arg|
             code.push(*compile(arg))
@@ -89,6 +91,8 @@ module GCC
               code << "CGTE"
             when :atom?
               code << "ATOM"
+            else
+              raise "Unsupported function #{args[0]}"
             end
           end
         end
@@ -150,6 +154,14 @@ module GCC
     def compile_variable(name)
       spec = current_env.get(name)
       ["LD #{spec[:frame]} #{spec[:index]}"]
+    end
+
+    def compile_set(expr)
+      name = expr.args[1]
+      code = compile(expr.args[2])
+      spec = current_env.get(name)
+      code << "ST #{spec[:frame]} #{spec[:index]}"
+      code
     end
 
     def current_env
