@@ -12,7 +12,7 @@ module GCC
       else
         raise "src should be String or IO-like"
       end
-      @cur = @src.getc
+      read_next
     end
 
     def parse
@@ -61,6 +61,12 @@ module GCC
              else
                @src.getc
              end
+      if @cur == ";"
+        # Comment mode
+        while !@src.eof? && @cur != "\n"
+          @cur = @src.getc
+        end
+      end
     end
 
     def peek
