@@ -16,10 +16,9 @@ module GCC
 
     def parse
       res = []
-      #until eof?
+      until eof?
         res << expr
-        puts res.last
-      #end
+      end
       res
     end
 
@@ -55,7 +54,7 @@ module GCC
     end
 
     def read_next
-      @cur = if @src.eof? 
+      @cur = if @src.eof?
                nil
              else
                @src.getc
