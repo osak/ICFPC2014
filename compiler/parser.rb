@@ -33,8 +33,10 @@ module GCC
         args = []
         until peek == ")"
           args << expr
+          skip_space
         end
         should_read ")"
+        skip_space
         Expression.new(args)
       else
         val = token
