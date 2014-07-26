@@ -38,6 +38,8 @@ module GCC
         should_read ")"
         skip_space
         Expression.new(args)
+      elsif peek == ")"
+        raise "Unexpected ')'"
       else
         val = token
         case val
