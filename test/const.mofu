@@ -1,0 +1,2 @@
+.const HOGE 12345
+$HOGE
