@@ -1,0 +1,4 @@
+(main (world ghost)
+    (cons 99 (lambda (arg)
+                (main (state world)
+                    (cons 99 1)))))

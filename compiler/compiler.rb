@@ -35,7 +35,7 @@ module GCC
     private
 
     ADDRESSING_FUNCTIONS =[
-      :if, :let, :lambda
+      :if, :let, :lambda, :main
     ].freeze
     PLACEHOLDER_PREFIX = "__"
 
@@ -138,6 +138,13 @@ module GCC
           b = compile_subroutine(body, "RTN")
           @lambda_env[b] = current_env
           code << "LDF #{b}"
+        end
+      when :main
+        args = expr.args[1]
+        new_env do
+          current_env.put(args.args[0], 0)
+          current_env.put(args.args[1], 1)
+          code.push(*compile(expr.args[2]))
         end
       end
       code
