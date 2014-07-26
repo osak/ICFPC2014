@@ -155,12 +155,14 @@ module GCC
       when :define
         args, body = expr.args[1..-1]
         f = args.args[0]
+        @toplevel_func[f] = subroutine_placeholder
         new_env do
           args.args[1..-1].each_with_index do |name, i|
             current_env.put(name, i)
           end
-          b = compile_subroutine(body, "RTN")
-          @toplevel_func[f] = b
+          insts = compile(body)
+          insts << "RTN"
+          update_subroutine(@toplevel_func[f], insts)
         end
       end
       code
@@ -212,6 +214,14 @@ module GCC
       tag = PLACEHOLDER_PREFIX + @subroutines.size.to_s
       @subroutines[tag] = insts
       tag
+    end
+
+    def subroutine_placeholder
+      add_subroutine([])
+    end
+
+    def update_subroutine(tag, insts)
+      @subroutines[tag] = insts
     end
   end
 end
