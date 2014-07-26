@@ -94,9 +94,9 @@ module GCC
               code << "CDR"
             when :"="
               code << "CEQ"
-            when :<
+            when :>
               code << "CGT"
-            when :<=
+            when :>=
               code << "CGTE"
             when :atom?
               code << "ATOM"
