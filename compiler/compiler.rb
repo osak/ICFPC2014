@@ -64,7 +64,7 @@ module GCC
             code.push(*compile(arg))
           end
 
-          if spec = current_env.get(expr.args[0])
+          if current_env && spec = current_env.get(expr.args[0])
             # User defined function
             # TODO: check is it really function
             code << "LD #{spec[:frame]} #{spec[:index]}"

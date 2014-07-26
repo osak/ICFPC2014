@@ -1,3 +1,4 @@
+require 'stringio'
 require_relative 'expr'
 
 module GCC
