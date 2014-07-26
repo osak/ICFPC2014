@@ -3,30 +3,33 @@ require_relative 'environment'
 module GCC
   class Compiler
     def initialize
-      @subroutines = []
-      @lambda_env = {}
+      @subroutines = {}
+      @toplevel_func = {}
+      @roots = []
       @env = nil
     end
 
     def register(obj)
-      holder = []
-      @subroutines << holder
-      holder.push(*compile(obj))
-      holder << "RTN"
+      insts = compile(obj)
+      if insts.size > 0
+        insts << "RTN"
+        @roots << add_subroutine(insts)
+      end
     end
 
     def to_gcc
-      tbl = []
+      tbl = {}
       index = 0
       ops = []
-      @subroutines.compact.each do |sr|
+      (@roots + @subroutines.keys).uniq.each do |key|
+        sr = @subroutines[key]
         ops.push(*sr)
-        tbl << index
+        tbl[key] = index
         index += sr.size
       end
       ops.each do |op|
-        op.gsub!(/#{PLACEHOLDER_PREFIX}(\d+)/){
-          tbl[$1.to_i]
+        op.gsub!(/(#{PLACEHOLDER_PREFIX}[0-9a-f]+)/){
+          tbl[$1]
         }
       end
       ops
@@ -35,7 +38,7 @@ module GCC
     private
 
     ADDRESSING_FUNCTIONS =[
-      :if, :let, :lambda, :main
+      :if, :let, :lambda, :main, :define
     ].freeze
     PLACEHOLDER_PREFIX = "__"
 
@@ -65,9 +68,13 @@ module GCC
           end
 
           if current_env && spec = current_env.get(expr.args[0])
-            # User defined function
+            # User defined lambda
             # TODO: check is it really function
             code << "LD #{spec[:frame]} #{spec[:index]}"
+            code << "AP #{expr.args.size - 1}"
+          elsif tag = @toplevel_func.fetch(expr.args[0], nil)
+            # User defined top-level function
+            code << "LDF #{tag}"
             code << "AP #{expr.args.size - 1}"
           else
             case expr.args[0]
@@ -136,7 +143,6 @@ module GCC
             current_env.put(name, i)
           end
           b = compile_subroutine(body, "RTN")
-          @lambda_env[b] = current_env
           code << "LDF #{b}"
         end
       when :main
@@ -146,14 +152,24 @@ module GCC
           current_env.put(args.args[1], 1)
           code.push(*compile(expr.args[2]))
         end
+      when :define
+        args, body = expr.args[1..-1]
+        f = args.args[0]
+        new_env do
+          args.args[1..-1].each_with_index do |name, i|
+            current_env.put(name, i)
+          end
+          b = compile_subroutine(body, "RTN")
+          @toplevel_func[f] = b
+        end
       end
       code
     end
 
     def compile_subroutine(expr, *post_op)
-      @subroutines << compile(expr)
-      @subroutines.last.push(*post_op)
-      "#{PLACEHOLDER_PREFIX}#{@subroutines.size-1}"
+      insts = compile(expr)
+      insts.push(*post_op)
+      add_subroutine(insts)
     end
 
     def compile_numeric(num)
@@ -190,6 +206,12 @@ module GCC
       @env = Environment.new(@env)
       yield
       @env = prev_env
+    end
+
+    def add_subroutine(insts)
+      tag = PLACEHOLDER_PREFIX + @subroutines.size.to_s
+      @subroutines[tag] = insts
+      tag
     end
   end
 end
