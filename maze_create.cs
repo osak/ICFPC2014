@@ -10,25 +10,14 @@ namespace MazeCreator
     {
         static void Main(string[] args)
         {
-            args = new string[] { "--w=10", "--h=10", "--s=1", "--o=fuga.txt" };
-            var h = -1;
-            var w = -1;
-            int? s = null;
+
+            //args = new string[] { "--w=16", "--h=16", "--s=1", "--a=fuga.txt", "--d=0.8", "--g=20", "--pd=0.1"};
+            int? h = null, w = null, s = null, g = null;
+            double? d = null, pd = null;
             string o = null;
             if (args.Length > 0)
-                processArgs(args, ref h, ref w, ref s, ref o);
-            else
-            {
-                var r = new Random();
-                h = 1 + r.Next() % 256;
-                w = 1 + r.Next() % 256;
-            }
-            if (!ok(h) || !ok(w))
-            {
-                Console.Error.WriteLine("invalid input");
-                return;
-            }
-            var creator = new MazeCreator(h, w, s);
+                processArgs(args, ref h, ref w,ref d,ref pd,ref g, ref s, ref o);
+            var creator = new MazeCreator(h, w, d,pd, g, s);
             var maze = creator.CreateMaze();
             if (o != null)
             {
@@ -42,56 +31,47 @@ namespace MazeCreator
         // --h=X : height=X
         // --s=X : sead=X
         // --o=X : outputFilePath=X
-        static void processArgs(string[] args, ref int h, ref int w, ref int? s,ref string o)
+        static void processArgs(string[] args, ref int? h, ref int? w, ref double? d,ref double?pd, ref int? g, ref int? s, ref string o)
         {
             var width = new Regex(@"--w=(\d+)");
             var height = new Regex(@"--h=(\d+)");
             var sead = new Regex(@"--s=(\d+)");
+            var dencity = new Regex(@"--d=0.(\d+)");
+            var powerPillDencity = new Regex(@"--pd=0.(\d+)");
+            var ghostSize = new Regex(@"--g=(\d+)");
             var output = new Regex(@"--o=(.+)");
             foreach (var x in args)
             {
                 if (width.IsMatch(x))
-                {
-                    var m = width.Match(x);
-                    w = int.Parse(m.Groups[1].Value);
-                }
+                    w = int.Parse(width.Match(x).Groups[1].Value);
                 else if (height.IsMatch(x))
-                {
-                    var m = height.Match(x);
-                    h = int.Parse(m.Groups[1].Value);
-                }
+                    h = int.Parse(height.Match(x).Groups[1].Value);
                 else if (sead.IsMatch(x))
-                {
-                    var m = sead.Match(x);
-                    s = int.Parse(m.Groups[1].Value);
-                }
+                    s = int.Parse(sead.Match(x).Groups[1].Value);
                 else if (output.IsMatch(x))
-                {
-                    var m = output.Match(x);
-                    o = m.Groups[1].Value;
-                }
+                    o = output.Match(x).Groups[1].Value;
+                else if (dencity.IsMatch(x))
+                    d = double.Parse("0." + dencity.Match(x).Groups[1].Value);
+                else if (powerPillDencity.IsMatch(x))
+                    pd = double.Parse("0." + dencity.Match(x).Groups[1].Value);
+                else if (ghostSize.IsMatch(x))
+                    g = int.Parse(ghostSize.Match(x).Groups[1].Value);
             }
 
-        }
-        static bool ok(int p)
-        {
-            if (p < 0 || p > 256)
-                return false;
-            else return true;
         }
         static void WriteMaze(char[,] maze,TextWriter writer)
         {
             var h = maze.GetLength(0);
             var w = maze.GetLength(1);
             var sb = new StringBuilder();
-            var wall = new string('#', w+2);
+            var wall = new string(Symbol.Wall, w+2);
             sb.AppendLine(wall);
             for (int i = 0; i < h; i++)
             {
-                sb.Append('#');
+                sb.Append(Symbol.Wall);
                 for (int j = 0; j < w; j++)
                     sb.Append(maze[i, j]);
-                sb.Append('#');
+                sb.Append(Symbol.Wall);
                 sb.AppendLine();
             }
             sb.Append(wall);
@@ -100,27 +80,28 @@ namespace MazeCreator
         }
 
     }
+    static class Symbol
+    {
+        public const char LambdaMan = '\\';
+        public const char Ghost = '=';
+        public const char Fruit = '%';
+        public const char Pill = '.';
+        public const char Wall = '#';
+        public const char PowerPill = 'o';
+        public const char Empty = ' ';
+    }
+
     class MazeCreator
     {
-        public MazeCreator(int level, int sead)
+        public MazeCreator(int? h, int? w, double? dencity, double? powerPillDencity, int? ghosts, int? sead)
         {
-            this.Level = level;
-            this.Sead = sead;
-            this.rand = new Random(sead);
-        }
-        public MazeCreator(int h, int w, int? sead)
-        {
-            this.Size = new Pair<int>(h, w);
-            if (sead != null)
-            {
-                this.Sead = sead.Value;
-                this.rand = new Random(Sead);
-            }
-            else
-            {
-                this.Sead = -1;
-                this.rand = new Random();
-            }
+            this.rand = (sead != null) ? new Random(sead.Value) : new Random();
+            var height = h??1 + (rand.Next() % 256);
+            var width = w??1 + (rand.Next() % 256);
+            this.Size = new Pair<int>(height, width);
+            Dencity = dencity ?? rand.NextDouble();
+            PowerPillDencity = powerPillDencity ?? rand.NextDouble();
+            GhostSize = ghosts ?? rand.Next() % 257;
         }
 
         //迷路のレベル
@@ -129,20 +110,44 @@ namespace MazeCreator
         //迷路生成全体で使うための乱数のシード
         public int Sead { get; private set; }
         private Random rand;
-
+        //Pillの密度
+        public double Dencity { get; private set; }
+        //PowerPillの密度
+        public double PowerPillDencity { get; private set; }
+        //Ghostの最大数
+        public int GhostSize { get; private set; }
         public char[,] CreateMaze()
         {
             var size = determineSize();
             var w = size.L-2;
             var h = size.R-2;
             var maze = new char[h, w];
-            putWall(maze);
-            var start = determinePosition(maze);
-            putPill(start, maze);
-            maze[start.L, start.R] = '\\';
+            //'#' と' 'を設置
             for (int i = 0; i < h; i++)
                 for (int j = 0; j < w; j++)
-                    if (maze[i, j] == '\0') maze[i, j] = ' ';
+                    maze[i, j] = Symbol.Empty;
+            putWall(maze);
+            //スタート位置の決定，pillの設置，fruitの設置
+            var start = determinePosition(maze,Symbol.Wall);
+            var pills = putPill(start, maze).ToArray();
+            maze[start.L, start.R] = Symbol.LambdaMan;
+            var fruit = determinePosition(maze, Symbol.Wall, Symbol.LambdaMan, Symbol.Empty);
+            maze[fruit.L, fruit.R] = Symbol.Fruit;
+            
+            //pillを' 'にする
+            var pillToEmpty = (int)(pills.Length * (1.0 - Dencity));
+            randomSet(pills, maze, Symbol.Empty, pillToEmpty);
+            pills = enumeratePosition(maze, Symbol.Wall, Symbol.LambdaMan, Symbol.Empty, Symbol.Fruit).ToArray();
+
+            //pillをpowerpillにする
+            var powerPills = (int)(pills.Length * PowerPillDencity);
+            randomSet(pills, maze, Symbol.PowerPill, powerPills);
+
+            //ghostの設置
+            var canPutGhost = enumeratePosition(maze, Symbol.Wall, Symbol.LambdaMan, Symbol.Fruit).ToArray();
+            randomSet(canPutGhost, maze, Symbol.Ghost, Math.Min(canPutGhost.Length, GhostSize));
+
+
             return maze;
         }
 
@@ -157,54 +162,57 @@ namespace MazeCreator
 
             for (int i = 1; i < h; i += 2)
                 for (int j = 1; j < w; j += 2)
-                    maze[i, j] = '#';
+                    maze[i, j] = Symbol.Wall;
             for (int i = 1; i < h; i += 2)
                 for (int j = 1; j < w; j += 2)
-                {
-                    do
+
+                    for (int k = 0; k < 1000; k++)
                     {
                         var d = this.rand.Next() % 4;
-                        var nh = i + dh[d];
-                        var nw = j + dw[d];
+                        int nh = i + dh[d], nw = j + dw[d];
                         if (nh < 0 || nh >= h || nw < 0 || nw >= w)
                             continue;
-                        if (maze[nh, nw] == '#')
+                        if (maze[nh, nw] == Symbol.Wall)
                             continue;
-                        maze[i + dh[d], j + dw[d]] = '#';
+                        maze[i + dh[d], j + dw[d]] = Symbol.Wall;
                         break;
-                    } while (true);
-
-
-                }
-
+                    }
         }
+        private void randomSet(Pair<int>[] positions, char[,] maze, char symbol, int size)
+        {
+            size = Math.Min(size, positions.Length);
+            foreach (var x in positions.OrderBy(x => rand.Next()).Take(size))
+                maze[x.L, x.R] = symbol; 
+        }
+
         //Lambdaマンのスタート地点から幅優先探索でpillを置く
-        private void putPill(Pair<int> start, char[,] maze)
+        //pillの座標を返す
+        private IEnumerable<Pair<int>> putPill(Pair<int> start, char[,] maze)
         {
             var q = new Queue<Pair<int>>();
             q.Enqueue(start);
-            var h = maze.GetLength(0);
-            var w = maze.GetLength(1);
+            int h = maze.GetLength(0), w = maze.GetLength(1);
             var dh = new int[] { 0, 1, 0, -1 };
             var dw = new int[] { -1, 0, 1, 0 };
+            maze[start.L, start.R] = Symbol.Wall;
             while (q.Any())
             {
                 var p = q.Dequeue();
-                var ph = p.L;
-                var pw = p.R;
+                int ph = p.L, pw = p.R;
                 for (int i = 0; i < 4; i++)
                 {
-                    var nh = ph + dh[i];
-                    var nw = pw + dw[i];
+                    int nh = ph + dh[i], nw = pw + dw[i];
                     if (nh < 0 || nh >= h || nw < 0 || nw >= w)
                         continue;
-                    if (maze[nh, nw] == '#') continue;
-                    if (maze[nh, nw] == '.') continue;
-                    maze[nh, nw] = '.';
-                    q.Enqueue(new Pair<int>(nh, nw));
+                    if (maze[nh, nw] == Symbol.Wall) continue;
+                    if (maze[nh, nw] == Symbol.Pill) continue;
+                    maze[nh, nw] = Symbol.Pill;
+                    var np = new Pair<int>(nh, nw);
+                    q.Enqueue(np);
+                    yield return np;
                 }
             }
-
+            maze[start.L, start.R] = Symbol.Empty;
 
         }
 
@@ -229,18 +237,26 @@ namespace MazeCreator
             } while (true);
         }
 
-        //壁でない座標をランダムに返す
-        Pair<int> determinePosition(char[,] maze)
+        //指定したシンボルでない座標をランダムに返す
+        Pair<int> determinePosition(char[,] maze,params char[] forbidden)
         {
-            var h = maze.GetLength(0);
-            var w = maze.GetLength(1);
-            do
+            int h = maze.GetLength(0), w = maze.GetLength(1);
+            for (int k = 0; k < 100000; k++)
             {
                 var ph = this.rand.Next() % h;
                 var pw = this.rand.Next() % w;
-                if (maze[ph, pw] == '#') continue;
+                if (forbidden.Contains(maze[ph, pw])) continue;
                 return new Pair<int>(ph, pw);
-            } while (true);
+            }
+            throw new TimeoutException("指定回数内に座標が得られませんでした");
+        }
+        private IEnumerable<Pair<int>> enumeratePosition(char[,] maze, params char[] forbidden)
+        {
+            int h = maze.GetLength(0), w = maze.GetLength(1);
+            for (int i = 0; i < h; i++)
+                for (int j = 0; j < w; j++)
+                    if (!forbidden.Contains(maze[i, j]))
+                        yield return new Pair<int>(i, j);
         }
 
     }
