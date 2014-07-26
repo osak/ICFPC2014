@@ -1,17 +1,21 @@
 module GCC
   class Expression
-    attr_reader :name, :args
+    attr_reader :args
 
-    def initialize(name, args)
-      @name = name.to_sym
+    def initialize(args)
       @args = args.dup
     end
 
     def to_s
-      base = "(#{@name}"
-      res = base.dup
+      base = "("
+      res = nil
       @args.each_with_index do |arg, i|
-        res << " " + arg.to_s
+        if i == 0
+          base << arg.to_s
+          res = base.dup
+        else
+          res << " " + arg.to_s
+        end
       end
       res + ")"
     end

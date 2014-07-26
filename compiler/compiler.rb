@@ -31,7 +31,7 @@ module GCC
     private
 
     ADDRESSING_FUNCTIONS =[
-      :if
+      :if, :let, :lambda
     ].freeze
     PLACEHOLDER_PREFIX = "__"
 
@@ -46,49 +46,57 @@ module GCC
 
     def compile_expression(expr)
       code = []
-      if ADDRESSING_FUNCTIONS.index(expr.name)
-        code.push(*compile_addressing_function(expr))
-      else
-        expr.each_arg do |arg|
-          code.push(*compile(arg))
-        end
+      if expr.args[0].is_a?(Symbol)
+        if ADDRESSING_FUNCTIONS.index(expr.args[0])
+          code.push(*compile_addressing_function(expr))
+        else
+          expr.args[1..-1].each do |arg|
+            code.push(*compile(arg))
+          end
 
-        case expr.name
-        when :+
-          code << "ADD"
-        when :-
-          code << "SUB"
-        when :*
-          code << "MUL"
-        when :/
-          code << "DIV"
-        when :cons
-          code << "CONS"
-        when :car
-          code << "CAR"
-        when :cdr
-          code << "CDR"
-        when :==
-          code << "CEQ"
-        when :<
-          code << "CGT"
-        when :<=
-          code << "CGTE"
-        when :atom?
-          code << "ATOM"
+          case expr.args[0]
+          when :+
+            code << "ADD"
+          when :-
+            code << "SUB"
+          when :*
+            code << "MUL"
+          when :/
+            code << "DIV"
+          when :cons
+            code << "CONS"
+          when :car
+            code << "CAR"
+          when :cdr
+            code << "CDR"
+          when :==
+            code << "CEQ"
+          when :<
+            code << "CGT"
+          when :<=
+            code << "CGTE"
+          when :atom?
+            code << "ATOM"
+          end
         end
+        code
+      else
+        raise "unsupported"
       end
-      code
     end
 
     def compile_addressing_function(expr)
       code = []
-      case expr.name
+      case expr.args[0]
       when :if
-        code.push(*compile(expr.args[0]))
-        t = compile_subroutine(expr.args[1], "JOIN")
-        f = compile_subroutine(expr.args[2], "JOIN")
+        code.push(*compile(expr.args[1]))
+        t = compile_subroutine(expr.args[2], "JOIN")
+        f = compile_subroutine(expr.args[3], "JOIN")
         code << "SEL #{t} #{f}"
+      when :let
+        # specialized form
+        # first tuple is bind list
+        binds, body = expr.args
       end
       code
     end

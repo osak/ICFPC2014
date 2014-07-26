@@ -29,20 +29,19 @@ module GCC
       if peek == "("
         should_read "("
         skip_space
-        func = token
         args = []
         until peek == ")"
           args << expr
         end
         should_read ")"
-        Expression.new(func, args)
+        Expression.new(args)
       else
         val = token
         case val
         when /\A\d+\z/
           val.to_i
         else
-          val
+          val.to_sym
         end
       end
     end
