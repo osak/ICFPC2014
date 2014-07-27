@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+<SyntaxDefinition name="C#" extensions=".cs" xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
+	<!-- The named colors 'Comment' and 'String' are used in SharpDevelop to detect if a line is inside a multiline string/comment -->
+	<Color name="Comment" foreground="Pink" exampleText=";comment" />
+	<Color name="String" foreground="LightBlue" exampleText="string text = &quot;Hello, World!&quot;"/>
+	<Color name="Char" foreground="Yellow" exampleText="char linefeed = '\n';"/>
+	<Color name="Punctuation" exampleText="a(b.c);" />
+	<Color name="NumberLiteral" foreground="LightGreen" exampleText="3.1415f"/>
+	<Color name="ConstNumber" foreground="Red" exampleText="$hoge"/>
+	<Color name="Keywords" fontWeight="bold" foreground="LightBlue" exampleText="if (a) {} else {}"/>
+	
+	
+	<!-- This is the main ruleset. -->
+	<RuleSet>
+
+		<Span color="Comment">
+			<Begin>;</Begin>
+		</Span>
+
+		<Rule color="String">
+			(@\w+)|(\w+:)
+		</Rule>
+		<Rule color="ConstNumber">
+			(\$\w+)|(\.const\s+\w+)
+		</Rule>
+
+		<Rule color="Keywords">
+			int\s+[0-8]
+		</Rule>
+
+		<Keywords color="Keywords">
+			<Word>mov</Word>
+			<Word>inc</Word>
+			<Word>dec</Word>
+			<Word>add</Word>
+			<Word>sub</Word>
+			<Word>mul</Word>
+			<Word>div</Word>
+			<Word>and</Word>
+			<Word>or</Word>
+			<Word>xor</Word>
+			<Word>jlt</Word>
+			<Word>jeq</Word>
+			<Word>jgt</Word>
+			<Word>hlt</Word>
+		</Keywords>	
+		<!-- Digits -->
+		<Rule color="NumberLiteral">
+			[0-9]+
+		</Rule>
+
+		<Rule>
+			\w{2,}
+		</Rule>
+		<Rule color="Char">
+			[a-h]
+		</Rule>
+
+		
+		<Rule color="Punctuation">
+			[?,.;()\[\]{}+\-/%*&lt;&gt;^+~!|&amp;]+
+		</Rule>
+	</RuleSet>
+</SyntaxDefinition>
