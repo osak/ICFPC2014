@@ -101,6 +101,8 @@ module GCC
               code << "CGTE"
             when :atom?
               code << "ATOM"
+            when :break
+              code << "BRK"
             else
               error("Unsupported function #{args[0]}", expr)
             end
