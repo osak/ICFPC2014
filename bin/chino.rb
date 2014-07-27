@@ -4,14 +4,20 @@ require 'optparse'
 require 'pp'
 require_relative '../compiler/parser.rb'
 require_relative '../compiler/compiler.rb'
+require_relative '../compiler/compiler_exception.rb'
 
 def parse(src)
-  parser = GCC::Parser.new(src)
-  compiler = GCC::Compiler.new
-  ast = parser.parse
-  ast.each{|a| compiler.register(a)}
+  begin
+    parser = GCC::Parser.new(src)
+    compiler = GCC::Compiler.new
+    ast = parser.parse
+    ast.each{|a| compiler.register(a)}
 
-  puts compiler.to_gcc.join("\n")
+    puts compiler.to_gcc.join("\n")
+  rescue GCC::CompilerException => e
+    puts "#{e}"
+    puts "  context: #{e.context}"
+  end
 end
 
 OptionParser.new do |opt|

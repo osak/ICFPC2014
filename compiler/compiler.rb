@@ -1,4 +1,5 @@
 require_relative 'environment'
+require_relative 'compiler_exception'
 
 module GCC
   class Compiler
@@ -101,13 +102,13 @@ module GCC
             when :atom?
               code << "ATOM"
             else
-              raise "Unsupported function #{args[0]}"
+              error("Unsupported function #{args[0]}", expr)
             end
           end
         end
         code
       else
-        raise "unsupported"
+        error("Using non-symbol as a function is not supported", expr)
       end
     end
 
@@ -126,7 +127,7 @@ module GCC
         new_env do
           code << "DUM #{binds.args.size}"
           binds.args.each_with_index do |bind, i|
-            raise "Symbol is expected for let binding" unless bind.args[0].is_a?(Symbol)
+            error("Symbol is expected for let binding", expr) unless bind.args[0].is_a?(Symbol)
             current_env.put(bind.args[0], i)
             code.push(*compile(bind.args[1]))
           end
@@ -184,7 +185,7 @@ module GCC
       elsif addr = @toplevel_func[name]
         ["LDF #{addr}"]
       else
-        raise "Unbound name '#{name}'"
+        error("Unbound name '#{name}'", nil)
       end
     end
 
@@ -227,6 +228,10 @@ module GCC
 
     def update_subroutine(tag, insts)
       @subroutines[tag] = insts
+    end
+
+    def error(message, context)
+      raise CompilerException.new(message, context)
     end
   end
 end
