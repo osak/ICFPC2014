@@ -82,7 +82,7 @@ module GCC
 
     def token
       res = ""
-      while !eof? && !peek.match(/\s|\)/)
+      while !eof? && !peek.match(/\s|\(|\)/)
         res << peek
         read_next
       end
