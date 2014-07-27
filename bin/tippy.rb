@@ -24,7 +24,7 @@ $<.each_line.with_index do |line, i|
       error("Duplicated label '#{$1}'", i)
     end
     jmp_table[$1] = lines.size
-  when /\A\.const\s+([a-zA-Z0-9_\[\]]+)\s+([0-9]+)/
+  when /\A\.const\s+([a-zA-Z0-9_]+)\s+([0-9]+)/
     if constants.has_key?($1)
       error("Duplicated constant name '#{$1}'", i)
     end
@@ -38,7 +38,7 @@ lines.each do |line|
   line.gsub!(/@([a-zA-Z0-9_]+)/){
     jmp_table.fetch($1)
   }
-  line.gsub!(/\$([a-zA-Z0-9_\[\]]+)/){
+  line.gsub!(/\$([a-zA-Z0-9_]+)/){
     constants.fetch($1)
   }
 end
