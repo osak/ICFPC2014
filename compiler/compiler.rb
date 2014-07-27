@@ -146,7 +146,7 @@ module GCC
             current_env.put(name, i)
           end
           b = compile_subroutine(body, "RTN")
-          code << "LDF #{b}"
+          code << "LDF #{b}\t;function @#{expr.line_no}"
         end
       when :main
         args = expr.args[1]
@@ -165,6 +165,7 @@ module GCC
           end
           insts = compile(body)
           insts << "RTN"
+          insts[0] += "\t; function #{args.args[0]}"
           update_subroutine(@toplevel_func[f], insts)
         end
       end

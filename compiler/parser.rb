@@ -12,6 +12,7 @@ module GCC
       else
         raise "src should be String or IO-like"
       end
+      @line_no = 1
       read_next
     end
 
@@ -37,7 +38,7 @@ module GCC
         end
         should_read ")"
         skip_space
-        Expression.new(args)
+        Expression.new(args, @line_no)
       elsif peek == ")"
         raise "Unexpected ')'"
       else
@@ -58,6 +59,9 @@ module GCC
     end
 
     def read_next
+      if @cur == "\n"
+        @line_no += 1
+      end
       @cur = if @src.eof?
                nil
              else
