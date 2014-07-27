@@ -1,0 +1,57 @@
+(define (nth-of n lst)
+    (if (= n 0) (car lst) (nth-of (- n 1) (cdr lst))))
+(define (get-tile field y x)
+    (nth-of x (nth-of y field)))
+(define (mod n d)
+    (- n (* d (/ n d))))
+(define (adjacent y x)
+    (cons (cons (- y 1) x)
+    (cons (cons y (+ x 1))
+    (cons (cons (+ y 1) x)
+    (cons (cons y (- x 1))
+          (cons -1 -1))))))
+(define (null? ls) (atom? (cdr ls)))
+(define (map f ls)
+  (if (null? ls) ls (cons (f (car ls)) (map f (cdr ls)))))
+(define (rng seed)
+    (mod (+ (* seed 5) 89219821) 1000000009))
+
+(define (cocoa state world)
+    (let ((field (car world))
+          (pos (car (cdr (car (cdr world)))))
+          (rand (rng state))
+          (res 0)
+          (i 0))
+        (begin
+            (set! res (mod rand 4))
+            (map (lambda (npos)
+                    (let ((tile (get-tile field (car npos) (cdr npos))))
+                        (begin
+                            (if (> (+ (= tile 2) (= tile 3)) 0)
+                                (set! res i)
+                                (void 0))
+                            (set! i (+ i 1))
+                            0)))
+                (adjacent (cdr pos) (car pos)))
+            (cons rand res))))
+
+(define (pseudo-field)
+    (cons
+              (cons 0 (cons 0 (cons 0 0)))
+        (cons (cons 2 (cons 5 (cons 2 0)))
+        (cons (cons 0 (cons 0 (cons 0 0))) 0))))
+
+;(cocoa 0 (cons (pseudo-field) ;map
+;            (cons
+;                (cons 3 ; vitality
+;                        (cons (cons 1 1) ; location
+;                            (cons 0 ; direction
+;                                (cons 3 ;life
+;                                      0 ; score
+;                                      ))))
+;                0 ;ghost
+;                )))
+;
+
+(main (_1 _2)
+    (cons 0 cocoa))
