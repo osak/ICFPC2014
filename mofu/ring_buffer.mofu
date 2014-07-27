@@ -1,0 +1,42 @@
+.const size 6
+
+.const count 254
+.const tmp 253
+.const index 252
+
+;get position
+int 3
+int 1
+
+
+;fillin
+jeq @filled, [$count],$size
+mov h, 0
+fillin:
+mov [h],a
+inc h
+mov [h],b
+inc h
+jlt @fillin, h, $size
+mov [$count], h
+
+;ringbuffer
+filled:
+mov [$tmp] , h
+div [$tmp],$size
+mul [$tmp], $size
+sub h,[$tmp]
+;e is mod position
+mov [h],a
+inc h
+mov [h],b
+inc h
+
+mov a,[0]
+mov b,[1]
+mov c,[2]
+mov d,[3]
+mov e,[4]
+mov f,[5]
+
+int 8

@@ -1,0 +1,25 @@
+int 3
+int 1
+jeq 10, [254],6
+mov h, 0
+mov [h],a
+inc h
+mov [h],b
+inc h
+jlt 4, h, 6
+mov [254], h
+mov [253] , h
+div [253],6
+mul [253], 6
+sub h,[253]
+mov [h],a
+inc h
+mov [h],b
+inc h
+mov a,[0]
+mov b,[1]
+mov c,[2]
+mov d,[3]
+mov e,[4]
+mov f,[5]
+int 8
