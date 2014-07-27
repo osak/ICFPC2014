@@ -157,6 +157,9 @@ module GCC
           code.push(*compile(expr.args[2]))
         end
       when :define
+        if !expr.args[1].is_a?(Expression)
+          error("Second argument of define must be a tuple", expr)
+        end
         args, body = expr.args[1..-1]
         f = args.args[0]
         @toplevel_func[f] = subroutine_placeholder
