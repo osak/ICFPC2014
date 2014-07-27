@@ -196,8 +196,11 @@ module GCC
     def compile_set(expr)
       name = expr.args[1]
       code = compile(expr.args[2])
-      spec = current_env.get(name)
-      code << "ST #{spec[:frame]} #{spec[:index]}"
+      if current_env && spec = current_env.get(name)
+        code << "ST #{spec[:frame]} #{spec[:index]}"
+      else
+        error("Unbound name '#{name}'", expr)
+      end
       code
     end
 
