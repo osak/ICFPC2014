@@ -28,6 +28,7 @@ module GCC
 
     def expr
       skip_space
+      base_line_no = @line_no
       if peek == "("
         should_read "("
         skip_space
@@ -38,7 +39,7 @@ module GCC
         end
         should_read ")"
         skip_space
-        Expression.new(args, @line_no)
+        Expression.new(args, base_line_no)
       elsif peek == ")"
         raise "Unexpected ')'"
       else

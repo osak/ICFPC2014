@@ -102,9 +102,9 @@ module GCC
             when :atom?
               code << "ATOM"
             when :break
-              code << "BRK"
+              code << "BRK\t;@line #{expr.line_no} #{expr}"
             else
-              error("Unsupported function #{args[0]}", expr)
+              error("Unsupported function #{expr.args[0]}", expr)
             end
           end
         end
@@ -146,7 +146,8 @@ module GCC
             current_env.put(name, i)
           end
           b = compile_subroutine(body, "RTN")
-          code << "LDF #{b}\t;function @#{expr.line_no}"
+          @subroutines[b][0] += "\t;lambda @#{expr.line_no}"
+          code << "LDF #{b}\t;load lambda @#{expr.line_no}"
         end
       when :main
         args = expr.args[1]
