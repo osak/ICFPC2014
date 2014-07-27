@@ -15,7 +15,7 @@ $<.each_line do |line|
   next if line.match(/\A\s*\z/)
   case line
   when /\A(.*):\s*\z/
-    jmp_table[m[1]] = lines.size
+    jmp_table[$1] = lines.size
   when /\A\.const\s+([a-zA-Z0-9_]+)\s+([0-9]+)/
     constants[$1] = $2.to_i
   else
