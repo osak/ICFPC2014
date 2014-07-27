@@ -4,14 +4,14 @@
 - solution: Our AI
 - code: Code used to generate AI
 
-## Main Strategy of AI
+## Main Strategy of Lambda-Man AI
 Lambda-man AI just looks four-neighbors of him and seeks for pill.
 If any pill is found, it goes to that direction; otherwise it moves
 randomly.
 
 ## Main Stratregy of Ghost AI
 Ghost AI generally traces Lambda-man.
-We have a two types of strategy, only trace and trace the expected position of lambda0man.
+We have a two types of strategy, only trace and trace the expected position of lambda-man.
 
 
 ## Main Strategy of Coding
