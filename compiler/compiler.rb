@@ -103,6 +103,8 @@ module GCC
               code << "ATOM"
             when :break
               code << "BRK\t;@line #{expr.line_no} #{expr}"
+            when :void
+              code << "DBUG"
             else
               error("Unsupported function #{expr.args[0]}", expr)
             end
