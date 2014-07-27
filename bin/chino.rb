@@ -16,7 +16,9 @@ def parse(src)
     puts compiler.to_gcc.join("\n")
   rescue GCC::CompilerException => e
     STDERR.puts "#{e}"
-    STDERR.puts "  context: #{e.context} at line #{e.context.line_no}"
+    if e.context
+      STDERR.puts "  context: #{e.context} at line #{e.context.line_no}"
+    end
   end
 end
 
