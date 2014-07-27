@@ -12,6 +12,7 @@ module GCC
       else
         raise "src should be String or IO-like"
       end
+      @line_no = 1
       read_next
     end
 
@@ -27,6 +28,7 @@ module GCC
 
     def expr
       skip_space
+      base_line_no = @line_no
       if peek == "("
         should_read "("
         skip_space
@@ -37,7 +39,7 @@ module GCC
         end
         should_read ")"
         skip_space
-        Expression.new(args)
+        Expression.new(args, base_line_no)
       elsif peek == ")"
         raise "Unexpected ')'"
       else
@@ -58,6 +60,9 @@ module GCC
     end
 
     def read_next
+      if @cur == "\n"
+        @line_no += 1
+      end
       @cur = if @src.eof?
                nil
              else
@@ -77,7 +82,7 @@ module GCC
 
     def token
       res = ""
-      while !eof? && !peek.match(/\s|\)/)
+      while !eof? && !peek.match(/\s|\(|\)/)
         res << peek
         read_next
       end

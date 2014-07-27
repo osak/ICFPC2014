@@ -1,4 +1,5 @@
 require_relative 'environment'
+require_relative 'compiler_exception'
 
 module GCC
   class Compiler
@@ -100,14 +101,16 @@ module GCC
               code << "CGTE"
             when :atom?
               code << "ATOM"
+            when :break
+              code << "BRK\t;@line #{expr.line_no} #{expr}"
             else
-              raise "Unsupported function #{args[0]}"
+              error("Unsupported function #{expr.args[0]}", expr)
             end
           end
         end
         code
       else
-        raise "unsupported"
+        error("Using non-symbol as a function is not supported", expr)
       end
     end
 
@@ -126,7 +129,7 @@ module GCC
         new_env do
           code << "DUM #{binds.args.size}"
           binds.args.each_with_index do |bind, i|
-            raise "Symbol is expected for let binding" unless bind.args[0].is_a?(Symbol)
+            error("Symbol is expected for let binding", expr) unless bind.args[0].is_a?(Symbol)
             current_env.put(bind.args[0], i)
             code.push(*compile(bind.args[1]))
           end
@@ -143,7 +146,8 @@ module GCC
             current_env.put(name, i)
           end
           b = compile_subroutine(body, "RTN")
-          code << "LDF #{b}"
+          @subroutines[b][0] += "\t;lambda @#{expr.line_no}"
+          code << "LDF #{b}\t;load lambda @#{expr.line_no}"
         end
       when :main
         args = expr.args[1]
@@ -153,6 +157,9 @@ module GCC
           code.push(*compile(expr.args[2]))
         end
       when :define
+        if !expr.args[1].is_a?(Expression)
+          error("Second argument of define must be a tuple", expr)
+        end
         args, body = expr.args[1..-1]
         f = args.args[0]
         @toplevel_func[f] = subroutine_placeholder
@@ -162,6 +169,7 @@ module GCC
           end
           insts = compile(body)
           insts << "RTN"
+          insts[0] += "\t; function #{args.args[0]}"
           update_subroutine(@toplevel_func[f], insts)
         end
       end
@@ -179,15 +187,23 @@ module GCC
     end
 
     def compile_variable(name)
-      spec = current_env.get(name)
-      ["LD #{spec[:frame]} #{spec[:index]}"]
+      if current_env && spec = current_env.get(name)
+        ["LD #{spec[:frame]} #{spec[:index]}"]
+      elsif addr = @toplevel_func[name]
+        ["LDF #{addr}"]
+      else
+        error("Unbound name '#{name}'", nil)
+      end
     end
 
     def compile_set(expr)
       name = expr.args[1]
       code = compile(expr.args[2])
-      spec = current_env.get(name)
-      code << "ST #{spec[:frame]} #{spec[:index]}"
+      if current_env && spec = current_env.get(name)
+        code << "ST #{spec[:frame]} #{spec[:index]}"
+      else
+        error("Unbound name '#{name}'", expr)
+      end
       code
     end
 
@@ -222,6 +238,10 @@ module GCC
 
     def update_subroutine(tag, insts)
       @subroutines[tag] = insts
+    end
+
+    def error(message, context)
+      raise CompilerException.new(message, context)
     end
   end
 end

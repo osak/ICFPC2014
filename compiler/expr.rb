@@ -1,9 +1,10 @@
 module GCC
   class Expression
-    attr_reader :args
+    attr_reader :args, :line_no
 
-    def initialize(args)
+    def initialize(args, line_no)
       @args = args.dup
+      @line_no = line_no
     end
 
     def to_s
