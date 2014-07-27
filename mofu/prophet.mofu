@@ -92,10 +92,10 @@ mov [h],b
 inc h
 
 
-mov a, [$px]
-mov b, [$py]
-mov c, [$prev_x]
-mov d, [$prev_y]
+;mov a, [$px]
+;mov b, [$py]
+;mov c, [$prev_x]
+;mov d, [$prev_y]
 
 
 ;distance_update
@@ -129,9 +129,9 @@ div [$dydt], $div_dt
 add [$py], [$dydt]
 y_updated:
 
-mov e, [$px]
-mov f, [$py]
-int 8
+;mov e, [$px]
+;mov f, [$py]
+;int 8
 
 ;vector check
 jgt @vx_than,[$x],[$px]

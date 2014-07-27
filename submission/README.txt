@@ -9,6 +9,11 @@ Lambda-man AI just looks four-neighbors of him and seeks for pill.
 If any pill is found, it goes to that direction; otherwise it moves
 randomly.
 
+## Main Stratregy of Ghost AI
+Ghost AI generally traces Lambda-man.
+We have a two types of strategy, only trace and trace the expected position of lambda0man.
+
+
 ## Main Strategy of Coding
 At the first glance, we noticed the importance of GCC compiler because
 it is appearently kind of a Lisp machine (Unfortunately we didn't
