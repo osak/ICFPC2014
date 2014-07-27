@@ -179,8 +179,13 @@ module GCC
     end
 
     def compile_variable(name)
-      spec = current_env.get(name)
-      ["LD #{spec[:frame]} #{spec[:index]}"]
+      if current_env && spec = current_env.get(name)
+        ["LD #{spec[:frame]} #{spec[:index]}"]
+      elsif addr = @toplevel_func[name]
+        ["LDF #{addr}"]
+      else
+        raise "Unbound name '#{name}'"
+      end
     end
 
     def compile_set(expr)

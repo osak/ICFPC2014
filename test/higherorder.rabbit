@@ -1,0 +1,5 @@
+(define (cat f g v) (f (g v)))
+(define (f v) (* v 2))
+(define (g v) (+ v 1))
+
+(cat f g 3)
