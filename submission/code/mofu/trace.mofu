@@ -1,0 +1,158 @@
+	
+;direction
+.const up 0
+.const right 1
+.const down 2
+.const left 3
+
+;vector
+.const vx 230
+.const vx_d 231
+.const vy 232
+.const vy_d 233
+
+;
+.const first 240
+.const second 241
+.const third 242
+.const fourth 243
+.const fifth 244
+;state
+.const tmp 249
+.const px 250;lambda man's x
+.const py 251;lambda man's y
+.const v 252;vitality
+.const w 253;way
+.const x 254;current x position
+.const y 255;current y position
+
+int 3;my id
+int 5;get current position
+mov [$x],a
+mov [$y],b
+int 3
+int 1;get lambdaman's position
+mov [$px],a
+mov [$py],b
+
+;vector check
+jgt @vx_than,[$x],[$px]
+mov [$vx], [$px]
+sub [$vx], [$x]
+mov [$vx_d], $right
+jeq @vx_determined,1,1
+vx_than:
+mov [$vx], [$x]
+sub [$vx], [$px]
+mov [$vx_d], $left
+vx_determined:
+
+jgt @vy_than,[$y],[$py]
+mov [$vy], [$py]
+sub [$vy], [$y]
+mov [$vy_d], $down
+jeq @vy_determined,1,1
+vy_than:
+mov [$vy], [$y]
+sub [$vy], [$py]
+mov [$vy_d], $up
+vy_determined:
+
+;priority determine
+jlt @p_vy_than, [$vx],[$vy]
+jeq @p_v_eq, [$vx],[$vy]
+
+p_vx_than:
+mov [$first], [$vx_d]
+mov [$second], [$vy_d]
+mov [$third], [$vx_d]
+mov [$fourth],[$vy_d]
+jeq @xor,1,1
+
+p_v_eq:
+mov [$tmp], $w
+and [$tmp], 1
+jeq @p_vy_than,[$tmp],1
+jeq @p_vx_than,1,1
+
+
+p_vy_than:
+mov [$first], [$vy_d]
+mov [$second], [$vx_d]
+mov [$third], [$vx_d]
+mov [$fourth],[$vy_d]
+
+xor:
+xor [$third],2
+xor [$fourth],2
+
+;debug
+mov a,[$vx]
+mov b,[$vx_d]
+mov c,[$vy]
+mov d,[$vy_d]
+mov e,[$first]
+mov f,[$second]
+mov g,[$third]
+mov h,[$fourth]
+int 8
+
+
+mov d, $first
+for:
+;copy x,y
+mov a, [$x]
+mov b, [$y]
+mov c, [d]
+
+;one move
+jeq @ue, [d],0
+jeq @migi, [d],1
+jeq @shita, [d],2
+;hidari
+dec a
+jeq @check, 1,1
+migi:
+inc a
+jeq @check, 1,1
+ue:
+dec b
+jeq @check, 1,1
+shita:
+inc b
+check:
+
+;dbg
+mov e, a
+mov f, b
+
+
+int 7
+mov g, a
+mov [$tmp], a
+int 8
+mov a, [d]
+jgt @move, [$tmp], 0 
+
+inc d
+jlt @for, d, $fifth
+
+
+;movement
+;move_up:
+;mov a, $up
+;jeq @move,1,1
+;move_down:
+;mov a, $down
+;jeq @move,1,1
+;move_right:
+;mov a, $right
+;jeq @move,1,1
+;move_left:
+;mov a, $left
+
+move:
+int 0
+
+
+

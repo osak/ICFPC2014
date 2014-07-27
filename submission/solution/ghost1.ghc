@@ -1,0 +1,75 @@
+int 3
+int 5
+mov [254],a
+mov [255],b
+int 3
+int 1
+mov [250],a
+mov [251],b
+jgt 13,[254],[250]
+mov [230], [250]
+sub [230], [254]
+mov [231], 1
+jeq 16,1,1
+mov [230], [254]
+sub [230], [250]
+mov [231], 3
+jgt 21,[255],[251]
+mov [232], [251]
+sub [232], [255]
+mov [233], 2
+jeq 24,1,1
+mov [232], [255]
+sub [232], [251]
+mov [233], 0
+jlt 35, [230],[232]
+jeq 31, [230],[232]
+mov [240], [231]
+mov [241], [233]
+mov [242], [231]
+mov [243],[233]
+jeq 39,1,1
+mov [249], 253
+and [249], 1
+jeq 35,[249],1
+jeq 26,1,1
+mov [240], [233]
+mov [241], [231]
+mov [242], [231]
+mov [243],[233]
+xor [242],2
+xor [243],2
+mov a,[230]
+mov b,[231]
+mov c,[232]
+mov d,[233]
+mov e,[240]
+mov f,[241]
+mov g,[242]
+mov h,[243]
+int 8
+mov d, 240
+mov a, [254]
+mov b, [255]
+mov c, [d]
+jeq 61, [d],0
+jeq 59, [d],1
+jeq 63, [d],2
+dec a
+jeq 64, 1,1
+inc a
+jeq 64, 1,1
+dec b
+jeq 64, 1,1
+inc b
+mov e, a
+mov f, b
+int 7
+mov g, a
+mov [249], a
+int 8
+mov a, [d]
+jgt 74, [249], 0
+inc d
+jlt 51, d, 244
+int 0
