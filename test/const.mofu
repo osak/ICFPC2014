@@ -1,2 +1,4 @@
 .const HOGE 12345
+.const tmp[0] 123
 $HOGE
+mov $tmp[0],$HOGE

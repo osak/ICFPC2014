@@ -16,7 +16,7 @@ $<.each_line do |line|
   case line
   when /\A(.*):\s*\z/
     jmp_table[$1] = lines.size
-  when /\A\.const\s+([a-zA-Z0-9_]+)\s+([0-9]+)/
+  when /\A\.const\s+([a-zA-Z0-9_\[\]]+)\s+([0-9]+)/
     constants[$1] = $2.to_i
   else
     lines << line
@@ -27,7 +27,7 @@ lines.each do |line|
   line.gsub!(/@([a-zA-Z0-9_]+)/){
     jmp_table.fetch($1)
   }
-  line.gsub!(/\$([a-zA-Z0-9_]+)/){
+  line.gsub!(/\$([a-zA-Z0-9_\[\]]+)/){
     constants.fetch($1)
   }
 end
