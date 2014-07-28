@@ -234,7 +234,7 @@ mov [$dxdt], [$prev_x]
 sub [$dxdt], [$px]
 mul [$dxdt], $dt
 div [$dxdt], $div_dt
-sub [$x], [$dxdt]
+sub [$px], [$dxdt]
 jeq @x_updated,1,1
 prev_x_than:
 mov [$dxdt], [$px]
