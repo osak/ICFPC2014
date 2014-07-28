@@ -222,11 +222,6 @@ mov [$third],[$first]
 xor [$third], 2
 mov [$fourth],[$second]
 xor [$fourth],2
-mov a, [0]
-mov b, [1]
-mov c, [2]
-mov d, [3]
-int 8
 jeq @start_move,1,1
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
