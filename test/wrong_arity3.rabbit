@@ -1,0 +1,2 @@
+(let ((a (lambda (a b) (+ a b))))
+    (a 1))
