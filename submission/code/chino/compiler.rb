@@ -1,7 +1,7 @@
 require_relative 'environment'
 require_relative 'compiler_exception'
 
-module GCC
+module Chino
   class Compiler
     def initialize
       @subroutines = {}
@@ -42,6 +42,30 @@ module GCC
       :if, :let, :lambda, :main, :define
     ].freeze
     PLACEHOLDER_PREFIX = "__"
+    BUILTIN_ARITY = {
+      :+ => 2,
+      :- => 2,
+      :* => 2,
+      :/ => 2,
+      :cons => 2,
+      :car => 1,
+      :cdr => 1,
+      :"=" => 2,
+      :> => 2,
+      :>= => 2,
+      :atom? => 1,
+      :break => -1,
+      :void => 1,
+      :stop => 1,
+      :set! => 2,
+      :begin => -1,
+      :if => 3,
+      :let => 2,
+      :lambda => 2,
+      :main => 2,
+      :define => 2
+    }.freeze
+
 
     def compile(obj)
       case obj
@@ -57,6 +81,13 @@ module GCC
     def compile_expression(expr)
       code = []
       if expr.args[0].is_a?(Symbol)
+        # Check arity for built-in function
+        if arity = BUILTIN_ARITY.fetch(expr.args[0], nil)
+          if arity != -1 && expr.args.size-1 != arity
+            error("Wrong # of arguments: #{expr.args.size-1} for #{arity}", expr)
+          end
+        end
+
         if ADDRESSING_FUNCTIONS.index(expr.args[0])
           code.push(*compile_addressing_function(expr))
         elsif expr.args[0] == :set!
@@ -73,9 +104,12 @@ module GCC
             # TODO: check is it really function
             code << "LD #{spec[:frame]} #{spec[:index]}"
             code << "AP #{expr.args.size - 1}"
-          elsif tag = @toplevel_func.fetch(expr.args[0], nil)
+          elsif spec = @toplevel_func.fetch(expr.args[0], nil)
             # User defined top-level function
-            code << "LDF #{tag}"
+            if expr.args.size-1 != spec[:arity]
+              error("Wrong # of arguments: #{expr.args.size-1} for #{spec[:arity]}", expr)
+            end
+            code << "LDF #{spec[:tag]}"
             code << "AP #{expr.args.size - 1}"
           else
             case expr.args[0]
@@ -105,6 +139,8 @@ module GCC
               code << "BRK\t;@line #{expr.line_no} #{expr}"
             when :void
               code << "DBUG"
+            when :stop
+              code << "STOP"
             else
               error("Unsupported function #{expr.args[0]}", expr)
             end
@@ -164,7 +200,7 @@ module GCC
         end
         args, body = expr.args[1..-1]
         f = args.args[0]
-        @toplevel_func[f] = subroutine_placeholder
+        @toplevel_func[f] = {tag: subroutine_placeholder, arity: args.args.size-1}.freeze
         new_env do
           args.args[1..-1].each_with_index do |name, i|
             current_env.put(name, i)
@@ -172,7 +208,7 @@ module GCC
           insts = compile(body)
           insts << "RTN"
           insts[0] += "\t; function #{args.args[0]}"
-          update_subroutine(@toplevel_func[f], insts)
+          update_subroutine(@toplevel_func[f][:tag], insts)
         end
       end
       code
@@ -192,7 +228,7 @@ module GCC
       if current_env && spec = current_env.get(name)
         ["LD #{spec[:frame]} #{spec[:index]}"]
       elsif addr = @toplevel_func[name]
-        ["LDF #{addr}"]
+        ["LDF #{addr[:tag]}"]
       else
         error("Unbound name '#{name}'", nil)
       end

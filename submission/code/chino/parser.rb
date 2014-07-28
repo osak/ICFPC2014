@@ -1,7 +1,7 @@
 require 'stringio'
 require_relative 'expr'
 
-module GCC
+module Chino
   class Parser
     def initialize(src)
       case src

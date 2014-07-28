@@ -1,4 +1,4 @@
-module GCC
+module Chino
   class Environment
     def initialize(parent)
       @table = {}

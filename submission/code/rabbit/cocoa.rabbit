@@ -1,9 +1,38 @@
+(define (mod a m) (- a (* (/ a m) m)))
+(define (inc x) (+ x 1))
+(define (dec x) (- x 1))
+(define (zero? x) (= 0 x))
+(define (min x y) (if (> x y) y x))
+(define (null? ls) (atom? (cdr ls)))
+(define (and a b) (* a b))
+(define (or a b) (> (+ a b) 0))
+(define (not a) (- 1 a))
+(define (null) (cons -1 -1))
+(define (nth-of n lst)
+    (if (zero? n) (car lst) (nth-of (dec n) (cdr lst))))
+(define (pow x y)
+ (if (zero? y) 1 (* x (pow x (dec y)))))
+(define (search-idx f ls) ; return pos or negative value
+  (if (null? ls) -33554432 (if (f (car ls)) 0 (inc (search-idx f (cdr ls))))))
+(define (search-elem f ls) ; return element or (null)
+  (if (null? ls) (null) (if (f (car ls)) (car ls) (search-elem f (cdr ls)))))
+(define (last ls) (if (null? (cdr ls)) (car ls) (last (cdr ls))))
+(define (reverse ls)
+  (let ((f (lambda (ls a) (if (null? ls) a (f (cdr ls) (cons (car ls) a))))))
+  (f ls (null))))
+(define (map f ls)
+  (if (null? ls) ls (cons (f (car ls)) (map f (cdr ls)))))
+(define (iota n)
+ (let ((f (lambda (i n) (if (= i n) (null) (cons i (f (inc i) n))))))
+  (f 0 n)))
+(define (replicate n x)
+ (if (zero? n) (null) (cons x (replicate (dec n) x))))
+(define (id x) x)
+
 (define (nth-of n lst)
     (if (= n 0) (car lst) (nth-of (- n 1) (cdr lst))))
 (define (get-tile field y x)
     (nth-of x (nth-of y field)))
-(define (mod n d)
-    (- n (* d (/ n d))))
 (define (adjacent y x)
     (cons (cons (- y 1) x)
     (cons (cons y (+ x 1))
@@ -11,47 +40,113 @@
     (cons (cons y (- x 1))
           (cons -1 -1))))))
 (define (null? ls) (atom? (cdr ls)))
-(define (map f ls)
-  (if (null? ls) ls (cons (f (car ls)) (map f (cdr ls)))))
 (define (rng seed)
     (mod (+ (* seed 5) 89219821) 1000000009))
 
-(define (cocoa state world)
-    (let ((field (car world))
-          (pos (car (cdr (car (cdr world)))))
-          (rand (rng state))
-          (res 0)
-          (i 0))
+(define (get-cell y x field)
+    (nth-of x (nth-of y field)))
+(define (set-nth n v lst)
+    (if (= n 0) 
+        (cons v (cdr lst))
+        (cons (car lst) (set-nth (- n 1) v (cdr lst)))))
+(define (set-cell y x v field)
+    (set-nth y (set-nth x v (nth-of y field)) field))
+
+;; Queue
+(define (new-q) (cons (null) (null)))
+(define (push-q x q) (cons (car q) (cons x (cdr q))))
+(define (empty-q? q) (and (null? (car q)) (null? (cdr q))))
+(define (rebalance-q q)
+  (if (null? (car q))
+    (cons (reverse (cdr q)) (car q))
+    q))
+(define (top-q q) (car (car q)))
+(define (pop-q q) (cons (cdr (car q)) (cdr q)))
+
+(define (escape field pos prohibit)
+    (let ((i 0))
         (begin
-            (set! res (mod rand 4))
-            (map (lambda (npos)
-                    (let ((tile (get-tile field (car npos) (cdr npos))))
-                        (begin
-                            (if (> (+ (= tile 2) (= tile 3)) 0)
-                                (set! res i)
-                                (void 0))
-                            (set! i (+ i 1))
-                            0)))
-                (adjacent (cdr pos) (car pos)))
-            (cons rand res))))
+            (void prohibit)
+            (map (lambda (np)
+                (begin
+                    (if (= i prohibit)
+                    0
+                    (if (> (get-cell (car np) (cdr np) field) 0)
+                        (stop (cons 0 i))
+                        0))
+                (set! i (+ i 1)))) (adjacent (cdr pos) (car pos)))
+            (cons 0 2))))
+
+(define (cocoa state world)
+ (let ((field (car world))
+       (lpos (car (cdr (car (cdr world)))))
+       (rand (rng state))
+       (res 0)
+       (vital (car (car (cdr world))))
+       (ghosts (car (cdr (cdr world))))
+       (i 0))
+  (begin
+   (map (lambda (gp)
+    (let ((x (car (car (cdr gp))))
+          (y (cdr (car (cdr gp)))))
+         (begin
+           (set! field (set-cell y x 7 field))
+           0))) ghosts)
+   (let ((bfs (lambda (q)
+             (begin
+              (set! q (rebalance-q q))
+              (if (empty-q? q) (null)
+               (let ((pos (top-q q))
+                     (nq (pop-q q))
+                     (cur-cell 0)
+                     (trash 0))
+                (begin
+                 (set! cur-cell (get-cell (car pos) (cdr pos) field))
+                 (set! trash (map
+                              (lambda (npos)
+                                (let ((cell (get-cell (car npos) (cdr npos) field)))
+                                  (begin
+                                    (set! i (+ i 1))
+                                    (if (+ (+ (= cell 2) (= cell 3)) (* (> vital 127) (= cell 7)))
+                                      (if (= cur-cell 0)
+                                       (stop (cons 0 (- i 1)))
+                                       (stop (cons 0 (- (* cur-cell -1) 1))))
+                                      (if (= cell 7)
+                                       (if (= cur-cell 0)
+                                           (escape field lpos (- i 1))
+                                           (escape field lpos (- (* cur-cell -1) 1)))
+                                       (if (> cell 0)
+                                         (begin
+                                            (if (> 0 cur-cell)
+                                                (set! field (set-cell (car npos) (cdr npos) cur-cell field))
+                                                (set! field (set-cell (car npos) (cdr npos) (* i -1) field)))
+                                            (set! nq (push-q npos nq)))
+                                            0)))
+                                     0))) (adjacent (car pos) (cdr pos))))
+                 (cons pos (bfs nq)))))))))
+      (begin
+        (set! field (set-cell (cdr lpos) (car lpos) 0 field))
+        (bfs (push-q (cons (cdr lpos) (car lpos)) (new-q)))
+        (cons 0 0)))
+      (cons rand 0))))
 
 (define (pseudo-field)
-    (cons
-              (cons 0 (cons 0 (cons 0 0)))
-        (cons (cons 2 (cons 5 (cons 2 0)))
-        (cons (cons 0 (cons 0 (cons 0 0))) 0))))
+(cons
+(cons 0 (cons 0 (cons 0 0)))
+(cons (cons 2 (cons 5 (cons 2 0)))
+(cons (cons 0 (cons 0 (cons 0 0))) 0))))
 
 ;(cocoa 0 (cons (pseudo-field) ;map
-;            (cons
-;                (cons 3 ; vitality
-;                        (cons (cons 1 1) ; location
-;                            (cons 0 ; direction
-;                                (cons 3 ;life
-;                                      0 ; score
-;                                      ))))
-;                0 ;ghost
-;                )))
+            ;            (cons
+                ;                (cons 3 ; vitality
+                    ;                        (cons (cons 1 1) ; location
+                        ;                            (cons 0 ; direction
+                            ;                                (cons 3 ;life
+                                ;                                      0 ; score
+                                ;                                      ))))
+                ;                0 ;ghost
+                ;                )))
 ;
 
 (main (_1 _2)
-    (cons 0 cocoa))
+ (cons 0 cocoa))

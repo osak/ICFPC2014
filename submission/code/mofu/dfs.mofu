@@ -1,0 +1,6 @@
+int 3
+int 5
+mov c,0 ; reset stack
+mov [c], a
+inc c
+mov [c], b

@@ -56,6 +56,7 @@ module Chino
       :atom? => 1,
       :break => -1,
       :void => 1,
+      :stop => 1,
       :set! => 2,
       :begin => -1,
       :if => 3,
@@ -138,6 +139,8 @@ module Chino
               code << "BRK\t;@line #{expr.line_no} #{expr}"
             when :void
               code << "DBUG"
+            when :stop
+              code << "STOP"
             else
               error("Unsupported function #{expr.args[0]}", expr)
             end

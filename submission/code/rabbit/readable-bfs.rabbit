@@ -1,0 +1,261 @@
+; ライブラリ ;{{{
+(define (mod a m) (- a (* (/ a m) m)))
+(define (inc x) (+ x 1))
+(define (dec x) (- x 1))
+(define (zero? x) (= 0 x))
+(define (min x y) (if (> x y) y x))
+(define (null? ls) (atom? (cdr ls)))
+(define (and a b) (* a b))
+(define (or a b) (> (+ a b) 0))
+(define (not a) (- 1 a))
+(define (null) (cons -1 -1))
+(define (nth-of n lst)
+    (if (zero? n) (car lst) (nth-of (dec n) (cdr lst))))
+(define (pow x y)
+ (if (zero? y) 1 (* x (pow x (dec y)))))
+(define (search-idx f ls) ; return pos or negative value
+  (if (null? ls) -33554432 (if (f (car ls)) 0 (inc (search-idx f (cdr ls))))))
+(define (search-elem f ls) ; return element or (null)
+  (if (null? ls) (null) (if (f (car ls)) (car ls) (search-elem f (cdr ls)))))
+(define (last ls) (if (null? (cdr ls)) (car ls) (last (cdr ls))))
+(define (reverse ls)
+  (let ((f (lambda (ls a) (if (null? ls) a (f (cdr ls) (cons (car ls) a))))))
+  (f ls (null))))
+(define (map f ls)
+  (if (null? ls) ls (cons (f (car ls)) (map f (cdr ls)))))
+(define (iota n)
+ (let ((f (lambda (i n) (if (= i n) (null) (cons i (f (inc i) n))))))
+  (f 0 n)))
+(define (replicate n x)
+ (if (zero? n) (null) (cons x (replicate (dec n) x))))
+(define (id x) x)
+;}}}
+
+; 木;{{{
+; (depth tree)
+(define (depth-of-t tree) (car tree))
+(define (raw-tree-of tree) (cdr tree))
+(define (size-of-t tree) (pow 2 (depth-of-t tree)))
+
+(define (list-to-t depth ls)
+  (let ((mk (lambda (dep)
+              (if (= 0 dep)
+                (let ((x (car ls)))
+                  (begin (set! ls (cdr ls)) x))
+                (cons (mk (- dep 1)) (mk (- dep 1)))))))
+    (cons depth (mk depth))))
+(define (get-nth-of-t n tree)
+ (let ((rec (lambda (t n halfsize)
+              (if (zero? halfsize)
+                t
+                (if (> halfsize n)
+                  (rec (car t) n (/ halfsize 2))
+                  (rec (cdr t) (- n halfsize) (/ halfsize 2)))))))
+     (rec (raw-tree-of tree) n (/ (size-of-t tree) 2))
+   ))
+(define (set-nth-of-t n v tree)
+  (let ((rec (lambda (t n halfsize)
+               (if (zero? halfsize)
+                 v
+                 (if (> halfsize n)
+                   (cons (rec (car t) n (/ halfsize 2)) (cdr t))
+                   (cons (car t) (rec (cdr t) (- n halfsize) (/ halfsize 2))))))))
+    (cons (depth-of-t tree) (rec (raw-tree-of tree) n (/ (size-of-t tree) 2)))))
+(define (map-t f tree)
+  (let ((rec (lambda (dep t)
+               (if (zero? dep)
+                (f t)
+                (cons (rec (dec dep) (car t)) (rec (dec dep) (cdr t)))))))
+   (cons (depth-of-t tree) (rec (depth-of-t tree) (raw-tree-of tree)))))
+;}}}
+
+; queue;{{{
+; queue : (front (reversed tail))
+; push-tail, pop-front
+(define (new-q) (cons (null) (null)))
+(define (push-q x q) (cons (car q) (cons x (cdr q))))
+(define (empty-q? q) (and (null? (car q)) (null? (cdr q))))
+(define (rebalance-q q)
+  (if (null? (car q))
+    (cons (reverse (cdr q)) (car q))
+    q))
+(define (top-q q) (car (car q)))
+(define (pop-q q) (cons (cdr (car q)) (cdr q)))
+;(define (queue-pop q) ; return (x, queue)
+;  (if (null? (car q))
+;    (queue-pop (cons (reverse (cdr q)) (car q)))
+;    (cons (car (car q)) (cons (cdr (car q)) (cdr q)))))
+;}}}
+
+; raw-world の処理用;{{{
+(define (map2 f ls) ; クソな形式のリスト上での map
+  (if (atom? (cdr ls))
+    (cons (f (car ls)) (cdr ls))
+    (cons (f (car ls)) (map2 f (cdr ls)))))
+(define (adjust-list ls nothing len) ; クソな形式のリストから固定長リストに.
+  (let ((flag 0)
+        (f (lambda (ls nothing len)
+             (if (= 0 len) (cons -1 -1)
+               (if (= 0 flag)
+                 (cons (car ls)
+                       (if (atom? (cdr ls))
+                         (begin (set! flag 1) (f ls nothing (dec len)))
+                         (f (cdr ls) nothing (dec len))))
+                 (cons nothing (f ls nothing (dec len))))))))
+    (f ls nothing (inc len))))
+;}}}
+
+(define (field-size) 32)
+(define (field-size-log) 5)
+;(define (field-size) 8)
+;(define (field-size-log) 3)
+
+; world の生成;{{{
+; [ T: field, L : lambda man, ]
+; T : tree
+; L : [ (y . x), ]
+(define (initialize-world raw-world)
+ (let ((raw-field (car raw-world))
+       (raw-lman (car (cdr raw-world))))
+   (let ((field
+          (list-to-t (field-size-log)
+           (map
+            (lambda (rrooww) (list-to-t (field-size-log) rrooww))
+            (adjust-list
+              (map2 (lambda (row) (adjust-list row 0 (field-size))) raw-field)
+              (replicate (field-size) 0)
+              (field-size)))))
+         (lman (cons
+                 (cons (car (car (cdr raw-lman)))     ; y
+                       (cdr (car (cdr raw-lman))))    ; x
+                 (null))))
+     (cons field (cons lman (null)))
+   )))
+;}}}
+
+; helper;{{{
+;0: up;
+;1: right;
+;2: down;
+;3: left.
+(define (adjacent pos)
+  (let ((y (car pos))
+        (x (cdr pos)))
+  (cons (cons (dec y) x)
+  (cons (cons y (inc x))
+  (cons (cons (inc y) x)
+  (cons (cons y (dec x))
+        (cons -1 -1)))))))
+;}}}
+
+(define (create-cell-table init-v world)
+ (map-t (lambda (row) (map-t (lambda (_) init-v) row) ) (car world)))
+(define (get-cell pos table)
+  (get-nth-of-t (cdr pos) (get-nth-of-t (car pos) table)))
+(define (set-cell pos v table)
+  (set-nth-of-t (car pos) (set-nth-of-t (cdr pos) v (get-nth-of-t (car pos) table)) table))
+
+;{{{
+;(define (pseudo-field)
+;    (cons (cons 0 (cons 0 (cons 0 0)))
+;    (cons (cons 2 (cons 5 (cons 2 0)))
+;    (cons (cons 0 (cons 0 (cons 0 0))) 0))))
+
+;(define (to-pow2 n)
+; (let ((rec (lambda (t n) (if (> n t) (rec (* 2 t) n) t))))
+;  (rec 1 n)))
+;
+;(define (log2 n)
+; (let ((rec (lambda (n) (if (zero? n) 0 (inc (rec (/ n 2)))))))
+;  (rec (dec n))))
+;
+;(define (initialize-useflag n)
+; (list-to-t (log2 n) (replicate (* 2 n) 0)))
+;(define (check-use i useflag)
+; (get-nth-of-t i useflag))
+;(define (set-use i useflag)
+; (set-nth-of-t i 1 useflag))
+;}}}
+
+(define (syaro state raw-world)
+ (let ((world (initialize-world raw-world))
+       (temp-var 0)
+       (temp-func 0)
+       (trash 0))
+  (let ((dist (create-cell-table 33554432 world))
+        (field (nth-of 0 world))
+        (lambda-pos (nth-of 0 (nth-of 1 world))))
+   ; bfs;{{{
+    (let ((bfs (lambda (q)
+               (begin
+                (set! q (rebalance-q q))
+                (if (empty-q? q) (null)
+                  (let ((pos (top-q q))
+                        (nq (pop-q q))
+                        (d 0))
+                    (begin
+                      (set! d (inc (get-cell pos dist)))
+                      (set! trash (map
+                        (lambda (npos)
+                          (let ((dd (get-cell npos dist)))
+                            (if (and (> dd d) (not (= 0 (get-cell npos field))))
+                              (begin
+                                (set! nq (push-q npos nq))
+                                (set! dist (set-cell npos d dist))
+                                0
+                                )
+                              0 ))) (adjacent pos)))
+                      (cons pos (bfs nq))))))))
+          (restore (lambda (pos)
+                     (let ((d (dec (get-cell pos dist))))
+                       (if (> 0 d) (null)
+                         (let ((npos (search-elem
+                                      (lambda (p) (= d (get-cell p dist)))
+                                      (adjacent pos))))
+                           (cons pos (restore npos)))))))
+          );}}}
+     (begin
+       (set! dist (set-cell lambda-pos 0 dist))
+       (let
+        ((bfs-order (bfs (push-q lambda-pos (new-q))))
+         (objective 0)
+         (res 0)
+        )
+        (begin
+         (set! objective (search-elem (lambda (pos)
+                                  (let ((v (get-cell pos field)))
+                                    (or (= v 2) (= v 3)))
+                                  ) bfs-order))
+         (set! res (last (restore objective)))
+         (set! res (search-idx (lambda (pos)
+                             (and (= (car pos) (car res)) (= (cdr pos) (cdr res)))
+                                )
+                           (adjacent lambda-pos)))
+         (cons 0 res)
+        )))
+     ))))
+
+(define (pseudo-field)
+ ;(cons (cons 0 (cons 1 (cons 2 0)))
+ ;(cons (cons 3 (cons 4 (cons 5 0)))
+ ;(cons (cons 6 (cons 7 (cons 8 0))) 0))))
+ (cons (cons 0 (cons 0 (cons 0 (cons 0 0))))
+ (cons (cons 0 (cons 1 (cons 2 (cons 0 0))))
+ (cons (cons 0 (cons 1 (cons 3 (cons 0 0))))
+ (cons (cons 0 (cons 0 (cons 0 (cons 0 0)))) 0)))))
+;(syaro 0 (cons (pseudo-field) ;map
+;            (cons
+;                (cons 3 ; vitality
+;                        (cons (cons 1 1) ; location
+;                            (cons 0 ; direction
+;                                (cons 3 ;life
+;                                      0 ; score
+;                                      ))))
+;                0 ;ghost
+;                )))
+;
+
+(main (_1 _2)
+    (cons 0 syaro))
+
+; vim:set ft=scheme fdm=marker commentstring=;%s:

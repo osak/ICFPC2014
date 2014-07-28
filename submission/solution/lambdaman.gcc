@@ -1,75 +1,194 @@
 LDC 0
-LDF 95
+LDF 909
 CONS
 RTN
-LD 0 0	; function nth-of
-LDC 0
-CEQ
-SEL 9 12
-RTN
-LD 0 1
-CAR
-JOIN
-LD 0 0
-LDC 1
-SUB
-LD 0 1
-CDR
-LDF 4
-AP 2
-JOIN
-LD 0 2	; function get-tile
-LD 0 1
-LD 0 0
-LDF 4
-AP 2
-LDF 4
-AP 2
-RTN
 LD 0 0	; function mod
-LD 0 1
 LD 0 0
 LD 0 1
 DIV
+LD 0 1
 MUL
 SUB
 RTN
-LD 0 0	; function adjacent
-LDC 1
-SUB
-LD 0 1
-CONS
-LD 0 0
-LD 0 1
+LD 0 0	; function inc
 LDC 1
 ADD
-CONS
-LD 0 0
-LDC 1
-ADD
-LD 0 1
-CONS
-LD 0 0
-LD 0 1
-LDC 1
-SUB
-CONS
-LDC -1
-LDC -1
-CONS
-CONS
-CONS
-CONS
-CONS
 RTN
+LD 0 0	; function dec
+LDC 1
+SUB
+RTN
+LDC 0	; function zero?
+LD 0 0
+CEQ
+RTN
+LD 0 0	; function min
+LD 0 1
+CGT
+SEL 29 31
+RTN
+LD 0 1
+JOIN
+LD 0 0
+JOIN
 LD 0 0	; function null?
 CDR
 ATOM
 RTN
-LD 0 1	; function map
-LDF 64
+LD 0 0	; function and
+LD 0 1
+MUL
+RTN
+LD 0 0	; function or
+LD 0 1
+ADD
+LDC 0
+CGT
+RTN
+LDC 1	; function not
+LD 0 0
+SUB
+RTN
+LDC -1	; function null
+LDC -1
+CONS
+RTN
+LD 0 0	; function paireq
+CAR
+LD 0 1
+CAR
+CEQ
+LD 0 0
+CDR
+LD 0 1
+CDR
+CEQ
+LDF 37
+AP 2
+RTN
+LD 0 0	; function nth-of
+LDF 20
 AP 1
-SEL 73 75
+SEL 73 76
+RTN
+LD 0 1
+CAR
+JOIN
+LD 0 0
+LDF 16
+AP 1
+LD 0 1
+CDR
+LDF 68
+AP 2
+JOIN
+LD 0 1	; function pow
+LDF 20
+AP 1
+SEL 89 91
+RTN
+LDC 1
+JOIN
+LD 0 0
+LD 0 0
+LD 0 1
+LDF 16
+AP 1
+LDF 84
+AP 2
+MUL
+JOIN
+LD 0 1	; function search-idx
+LDF 33
+AP 1
+SEL 105 117
+RTN
+LDC -33554432
+JOIN
+LDC 0
+JOIN
+LD 0 0
+LD 0 1
+CDR
+LDF 100
+AP 2
+LDF 12
+AP 1
+JOIN
+LD 0 1
+CAR
+LD 0 0
+AP 1
+SEL 107 109
+JOIN
+LD 0 1	; function search-elem
+LDF 33
+AP 1
+SEL 128 140
+RTN
+LDF 51
+AP 0
+JOIN
+LD 0 1
+CAR
+JOIN
+LD 0 0
+LD 0 1
+CDR
+LDF 123
+AP 2
+JOIN
+LD 0 1
+CAR
+LD 0 0
+AP 1
+SEL 131 134
+JOIN
+LD 0 0	; function last
+CDR
+LDF 33
+AP 1
+SEL 152 155
+RTN
+LD 0 0
+CAR
+JOIN
+LD 0 0
+CDR
+LDF 146
+AP 1
+JOIN
+DUM 1	; function reverse
+LDF 176	;load lambda @23
+LDF 181
+RAP 1
+RTN
+LD 0 1
+JOIN
+LD 0 0
+CDR
+LD 0 0
+CAR
+LD 0 1
+CONS
+LD 1 0
+AP 2
+JOIN
+LD 0 0	;lambda @23
+LDF 33
+AP 1
+SEL 165 167
+RTN
+LD 1 0
+LDF 51
+AP 0
+LD 0 0
+AP 2
+RTN
+LD 0 1	; function map
+LDF 33
+AP 1
+SEL 192 194
 RTN
 LD 0 1
 JOIN
@@ -80,109 +199,1318 @@ AP 1
 LD 0 0
 LD 0 1
 CDR
-LDF 68
+LDF 187
 AP 2
 CONS
 JOIN
-LD 0 0	; function rng
+DUM 1	; function iota
+LDF 222	;load lambda @28
+LDF 227
+RAP 1
+RTN
+LDF 51
+AP 0
+JOIN
+LD 0 0
+LD 0 0
+LDF 12
+AP 1
+LD 0 1
+LD 1 0
+AP 2
+CONS
+JOIN
+LD 0 0	;lambda @28
+LD 0 1
+CEQ
+SEL 210 213
+RTN
+LDC 0
+LD 1 0
+LD 0 0
+AP 2
+RTN
+LD 0 0	; function replicate
+LDF 20
+AP 1
+SEL 237 240
+RTN
+LDF 51
+AP 0
+JOIN
+LD 0 1
+LD 0 0
+LDF 16
+AP 1
+LD 0 1
+LDF 232
+AP 2
+CONS
+JOIN
+LD 0 0	; function id
+RTN
+LD 0 1	; function filter
+LDF 33
+AP 1
+SEL 256 274
+RTN
+LDF 51
+AP 0
+JOIN
+LD 0 1
+CAR
+LD 0 0
+LD 0 1
+CDR
+LDF 251
+AP 2
+CONS
+JOIN
+LD 0 0
+LD 0 1
+CDR
+LDF 251
+AP 2
+JOIN
+LD 0 1
+CAR
+LD 0 0
+AP 1
+SEL 259 268
+JOIN
+DUM 1	; function min-by
+LDF 289	;load lambda @37
+LDF 329
+RAP 1
+RTN
+LD 0 1
+JOIN
+LD 0 0
+JOIN
+LD 0 0	;lambda @37
+CAR
+LD 0 1
+CAR
+CGT
+SEL 285 287
+RTN
+LD 0 0
+CAR
+LD 3 0
+AP 1
+LD 0 0
+CAR
+CONS
+JOIN
+LD 0 0
+CAR
+LD 3 0
+AP 1
+LD 0 0
+CAR
+CONS
+LD 0 0
+CDR
+LD 1 0
+AP 1
+LD 2 0
+AP 2
+JOIN
+LD 0 0	;lambda @38
+CDR
+LDF 33
+AP 1
+SEL 296 304
+RTN
+LD 2 1
+LD 0 0
+AP 1
+CDR
+RTN
+DUM 1
+LDF 318	;load lambda @38
+LDF 324
+RAP 1
+RTN
+LD 0 0	; function mklist2
+LD 0 1
+LDF 51
+AP 0
+CONS
+CONS
+RTN
+LD 0 0	; function mklist3
+LD 0 1
+LD 0 2
+LDF 334
+AP 2
+CONS
+RTN
+LD 0 0	; function mklist4
+LD 0 1
+LD 0 2
+LD 0 3
+LDF 341
+AP 3
+CONS
+RTN
+LD 0 0	; function depth-of-t
+CAR
+RTN
+LD 0 0	; function raw-tree-of
+CDR
+RTN
+LDC 2	; function size-of-t
+LD 0 0
+LDF 356
+AP 1
+LDF 84
+AP 2
+RTN
+DUM 1	; function list-to-t
+LDF 397	;load lambda @54
+LDF 402
+RAP 1
+RTN
+LD 3 1
+CDR
+ST 3 1
+LD 0 0
+RTN
+DUM 1
+LD 3 1
+CAR
+LDF 374
+RAP 1
+JOIN
+LD 0 0
+LDC 1
+SUB
+LD 1 0
+AP 1
+LD 0 0
+LDC 1
+SUB
+LD 1 0
+AP 1
+CONS
+JOIN
+LDC 0	;lambda @54
+LD 0 0
+CEQ
+SEL 379 385
+RTN
+LD 1 0
+LD 1 0
+LD 0 0
+AP 1
+CONS
+RTN
+DUM 1	; function get-nth-of-t
+LDF 440	;load lambda @61
+LDF 445
+RAP 1
+RTN
+LD 0 0
+JOIN
+LD 0 0
+CAR
+LD 0 1
+LD 0 2
+LDC 2
+DIV
+LD 1 0
+AP 3
+JOIN
+LD 0 0
+CDR
+LD 0 1
+LD 0 2
+SUB
+LD 0 2
+LDC 2
+DIV
+LD 1 0
+AP 3
+JOIN
+LD 0 2
+LD 0 1
+CGT
+SEL 415 424
+JOIN
+LD 0 2	;lambda @61
+LDF 20
+AP 1
+SEL 413 435
+RTN
+LD 1 1
+LDF 359
+AP 1
+LD 1 0
+LD 1 1
+LDF 362
+AP 1
+LDC 2
+DIV
+LD 0 0
+AP 3
+RTN
+DUM 1	; function set-nth-of-t
+LDF 495	;load lambda @70
+LDF 500
+RAP 1
+RTN
+LD 2 1
+JOIN
+LD 0 0
+CAR
+LD 0 1
+LD 0 2
+LDC 2
+DIV
+LD 1 0
+AP 3
+LD 0 0
+CDR
+CONS
+JOIN
+LD 0 0
+CAR
+LD 0 0
+CDR
+LD 0 1
+LD 0 2
+SUB
+LD 0 2
+LDC 2
+DIV
+LD 1 0
+AP 3
+CONS
+JOIN
+LD 0 2
+LD 0 1
+CGT
+SEL 464 476
+JOIN
+LD 0 2	;lambda @70
+LDF 20
+AP 1
+SEL 462 490
+RTN
+LD 1 2
+LDF 356
+AP 1
+LD 1 2
+LDF 359
+AP 1
+LD 1 0
+LD 1 2
+LDF 362
+AP 1
+LDC 2
+DIV
+LD 0 0
+AP 3
+CONS
+RTN
+DUM 1	; function map-t
+LDF 541	;load lambda @78
+LDF 546
+RAP 1
+RTN
+LD 0 1
+LD 2 0
+AP 1
+JOIN
+LD 0 0
+LDF 16
+AP 1
+LD 0 1
+CAR
+LD 1 0
+AP 2
+LD 0 0
+LDF 16
+AP 1
+LD 0 1
+CDR
+LD 1 0
+AP 2
+CONS
+JOIN
+LD 0 0	;lambda @78
+LDF 20
+AP 1
+SEL 521 525
+RTN
+LD 1 1
+LDF 356
+AP 1
+LD 1 1
+LDF 356
+AP 1
+LD 1 1
+LDF 359
+AP 1
+LD 0 0
+AP 2
+CONS
+RTN
+LDF 51	; function new-q
+AP 0
+LDF 51
+AP 0
+CONS
+RTN
+LD 0 1	; function push-q
+CAR
+LD 0 0
+LD 0 1
+CDR
+CONS
+CONS
+RTN
+LD 0 0	; function empty-q?
+CAR
+LDF 33
+AP 1
+LD 0 0
+CDR
+LDF 33
+AP 1
+LDF 37
+AP 2
+RTN
+LD 0 0	; function rebalance-q
+CAR
+LDF 33
+AP 1
+SEL 590 598
+RTN
+LD 0 0
+CDR
+LDF 160
+AP 1
+LD 0 0
+CAR
+CONS
+JOIN
+LD 0 0
+JOIN
+LD 0 0	; function top-q
+CAR
+CAR
+RTN
+LD 0 0	; function pop-q
+CAR
+CDR
+LD 0 0
+CDR
+CONS
+RTN
+LD 0 1	; function map2
+CDR
+ATOM
+SEL 616 624
+RTN
+LD 0 1
+CAR
+LD 0 0
+AP 1
+LD 0 1
+CDR
+CONS
+JOIN
+LD 0 1
+CAR
+LD 0 0
+AP 1
+LD 0 0
+LD 0 1
+CDR
+LDF 611
+AP 2
+CONS
+JOIN
+LD 0 0	; function fxxk-to-list
+CAR
+LD 0 0
+CDR
+ATOM
+SEL 643 646
+CONS
+RTN
+LDF 51
+AP 0
+JOIN
+LD 0 0
+CDR
+LDF 635
+AP 1
+JOIN
+DUM 2	; function adjust-list
+LDC 0
+LDF 703	;load lambda @112
+LDF 708
+RAP 2
+RTN
+LDC -1
+LDC -1
+CONS
+JOIN
+LDC 1
+ST 1 0
+LD 0 0
+LD 0 1
+LD 0 2
+LDF 16
+AP 1
+LD 1 1
+AP 3
+JOIN
+LD 0 0
+CDR
+LD 0 1
+LD 0 2
+LDF 16
+AP 1
+LD 1 1
+AP 3
+JOIN
+LD 0 0
+CAR
+LD 0 0
+CDR
+ATOM
+SEL 661 671
+CONS
+JOIN
+LD 0 1
+LD 0 0
+LD 0 1
+LD 0 2
+LDF 16
+AP 1
+LD 1 1
+AP 3
+CONS
+JOIN
+LDC 0
+LD 1 0
+CEQ
+SEL 680 688
+JOIN
+LDC 0	;lambda @112
+LD 0 2
+CEQ
+SEL 657 698
+RTN
+LD 1 0
+LD 1 1
+LD 1 2
+LDF 12
+AP 1
+LD 0 1
+AP 3
+RTN
+LDC 33554432	; function INF
+RTN
+LDC 32	; function field-size
+RTN
+LDC 5	; function field-size-log
+RTN
+DUM 3	; function initialize-world
+LD 1 0
+CAR
+LD 1 0
+CDR
+CAR
+LD 1 0
+CDR
+CDR
+CAR
+LDF 770
+RAP 3
+RTN
+LDF 720	;lambda @143
+AP 0
+LD 0 0
+LDF 369
+AP 2
+RTN
+LD 0 0	;lambda @145
+LDC 0
+LDF 718
+AP 0
+LDF 651
+AP 3
+RTN
+LD 0 0	;lambda @153
+CDR
+CAR
+CAR
+LD 0 0
+CDR
+CAR
+CDR
+CONS
+LDF 51
+AP 0
+CONS
+RTN
+LD 0 0
+LD 0 1
+LD 0 2
+LDF 51
+AP 0
+CONS
+CONS
+CONS
+RTN
+DUM 3
+LDF 720
+AP 0
+LDF 735	;load lambda @143
+LDF 741	;load lambda @145
+LD 1 0
+LDF 611
+AP 2
+LDF 718
+AP 0
+LDC 0
+LDF 232
+AP 2
+LDF 718
+AP 0
+LDF 651
+AP 3
+LDF 187
+AP 2
+LDF 369
+AP 2
+LD 1 1
+CDR
+CAR
+CAR
+LD 1 1
+CDR
+CAR
+CDR
+CONS
+LD 1 1
+CAR
+LDF 51
+AP 0
+CONS
+CONS
+LDF 748	;load lambda @153
+LD 1 2
+LDF 635
+AP 1
+LDF 187
+AP 2
+LDF 761
+RAP 3
+RTN
+DUM 2	; function adjacent
+LD 1 0
+CAR
+LD 1 0
+CDR
+LDF 823
+RAP 2
+RTN
+LD 0 0
+LD 0 1
+LDF 16
+AP 1
+CONS
+LD 0 0
+LDF 12
+AP 1
+LD 0 1
+CONS
+LD 0 0
+LD 0 1
+LDF 12
+AP 1
+CONS
+LD 0 0
+LDF 16
+AP 1
+LD 0 1
+CONS
+LDC -1
+LDC -1
+CONS
+CONS
+CONS
+CONS
+CONS
+RTN
+LDF 856	;load lambda @188	; function map-table
+LD 0 1
+LDF 516
+AP 2
+RTN
+LD 1 0	;lambda @188
+LD 0 0
+LDF 516
+AP 2
+RTN
+LDF 869	;load lambda @190	; function create-cell-table
+LD 0 1
+CAR
+LDF 516
+AP 2
+RTN
+LD 2 0	;lambda @190
+RTN
+LDF 867	;load lambda @190	;lambda @190
+LD 0 0
+LDF 516
+AP 2
+RTN
+LD 0 0	; function get-cell
+CAR
+LD 0 0
+CDR
+LD 0 1
+LDF 408
+AP 2
+LDF 408
+AP 2
+RTN
+LD 0 0	; function set-cell
+CDR
+LD 0 0
+CAR
+LD 0 1
+LD 0 0
+CDR
+LD 0 2
+LDF 408
+AP 2
+LDF 457
+AP 3
+LD 0 2
+LDF 457
+AP 3
+RTN
+LDC 2	; function is-pill
+LD 0 0
+CEQ
+LDC 3
+LD 0 0
+CEQ
+LDF 41
+AP 2
+RTN
+DUM 5	; function botsukyara
+LD 1 1
+LDF 722
+AP 1
+LDC 0
+LDC 0
+LDC 0
+LD 1 0
+LDF 1478
+RAP 5
+RTN
+LD 0 0
+ST 3 4
+LD 0 0
+RTN
+DUM 1	;lambda @227
+LD 3 4
 LDC 5
 MUL
 LDC 89219821
 ADD
 LDC 1000000009
-LDF 28
+LDF 4
+AP 2
+LDF 920
+RAP 1
+RTN
+LD 0 0	;lambda @234
+CAR
+RTN
+LDF 51
+AP 0
+JOIN
+LDF 559
+AP 0
+ST 1 0
+LD 0 0
+LDF 51
+AP 0
+CONS
+JOIN
+LD 1 0
+LD 2 1
+LDF 565
+AP 2
+ST 2 1
+LD 1 0
+LD 2 2
+LD 5 1
+LDF 884
+AP 3
+ST 5 1
+LDC 0
+JOIN
+LDC 0
+JOIN
+LD 0 0
+LD 2 2
+CGT
+LDC 0
+LD 1 0
+LD 5 3
+LDF 874
+AP 2
+CEQ
+LDF 47
+AP 1
+LDF 37
+AP 2
+SEL 950 963
+RTN
+DUM 1	;lambda @251
+LD 1 0
+LD 5 1
+LDF 874
+AP 2
+LDF 965
+RAP 1
+RTN
+LD 0 0
+LD 3 1
+LDF 874
+AP 2
+LDF 12
+AP 1
+ST 0 2
+LDF 980	;load lambda @251
+LD 0 0
+LDF 815
+AP 1
+LDF 187
+AP 2
+ST 4 3
+LD 0 0
+LD 0 1
+LD 2 0
+AP 1
+CONS
+JOIN
+LD 0 0
+LD 3 3
+LDF 874
+AP 2
+LDF 900
+AP 1
+SEL 942 988
+RTN
+DUM 3
+LD 1 0
+LDF 600
+AP 1
+LD 1 0
+LDF 604
+AP 1
+LDC 0
+LDF 1008
+RAP 3
+JOIN
+LD 0 0	;lambda @237
+LDF 584
+AP 1
+ST 0 0
+LD 0 0
+LDF 573
+AP 1
+SEL 939 1016
+RTN
+LDF 51
+AP 0
+JOIN
+LD 1 0
+LD 2 1
+LDF 565
+AP 2
+ST 2 1
+LD 1 0
+LD 2 2
+LD 5 1
+LDF 884
+AP 3
+ST 5 1
+LDC 0
+JOIN
+LDC 0
+JOIN
+LD 3 1
+LD 2 2
+CGT
+LD 0 0
+LD 2 2
+CGT
+LDF 37
+AP 2
+LDC 0
+LD 1 0
+LD 5 3
+LDF 874
+AP 2
+CEQ
+LDF 47
+AP 1
+LDF 37
+AP 2
+SEL 1039 1052
+RTN
+DUM 1	;lambda @271
+LD 1 0
+LD 5 1
+LDF 874
+AP 2
+LDF 1054
+RAP 1
+RTN
+LD 0 0
+LD 3 1
+LDF 874
+AP 2
+LDF 12
+AP 1
+ST 0 2
+LDF 1074	;load lambda @271
+LD 0 0
+LDF 815
+AP 1
+LDF 187
+AP 2
+ST 4 3
+LD 0 0
+LD 0 1
+LD 1 1
+LD 2 1
+AP 2
+CONS
+RTN
+DUM 3
+LD 1 0
+LDF 600
+AP 1
+LD 1 0
+LDF 604
+AP 1
+LDC 0
+LDF 1082
+RAP 3
+JOIN
+LD 0 0	;lambda @261
+LDF 584
+AP 1
+ST 0 0
+LD 0 0
+LDF 573
+AP 1
+SEL 1036 1103
+RTN
+LDF 51
+AP 0
+JOIN
+LD 2 0	;lambda @286
+LD 0 0
+LD 5 1
+LDF 874
+AP 2
+CEQ
+RTN
+LD 2 0
+LD 0 0
+LD 3 2
+AP 1
+CONS
+RTN
+DUM 1
+LDF 1126	;load lambda @286
+LD 2 0
+LDF 815
+AP 1
+LDF 123
+AP 2
+LDF 1133
+RAP 1
+JOIN
+LDC 0
+LD 0 0
+CGT
+SEL 1123 1139
+RTN
+DUM 1	;lambda @282
+LD 1 0
+LD 3 1
+LDF 874
+AP 2
+LDF 16
+AP 1
+LDF 1149
+RAP 1
+RTN
+LDF 716	;lambda @291
+AP 0
+RTN
+LDF 1164	;load lambda @291	;lambda @290
+LD 3 1
+LDF 851
+AP 2
+ST 3 1
+LD 0 0
+LDC 0
+LD 3 1
+LDF 884
+AP 3
+ST 3 1
+LD 0 0
+LDF 559
+AP 0
+LDF 565
+AP 2
+LD 2 0
+AP 1
+RTN
+LDF 716	;lambda @295
+AP 0
+RTN
+LDF 1186	;load lambda @295	;lambda @294
+LD 3 1
+LDF 851
+AP 2
+ST 3 1
+LD 0 0
+LDC 0
+LD 3 1
+LDF 884
+AP 3
+ST 3 1
+LD 0 0
+LDF 559
+AP 0
+LDF 565
+AP 2
+LD 0 1
+LD 2 1
 AP 2
 RTN
-DUM 5	; function cocoa
-LD 1 1
-CAR
-LD 1 1
-CDR
-CAR
-CDR
-CAR
+LDF 716	;lambda @308
+AP 0
+LD 0 0
+LD 4 1
+LDF 874
+AP 2
+CGT
+RTN
+LD 0 0	;lambda @310
+LD 4 3
+LDF 874
+AP 2
+LDF 900
+AP 1
+RTN
+LD 0 0	;lambda @316
+LD 4 3
+LDF 874
+AP 2
+LDF 900
+AP 1
+RTN
+LD 0 0	;lambda @319
+LD 1 3
+LDF 55
+AP 2
+RTN
+LD 3 5
 LD 1 0
-LDF 86
+AP 1
+ST 0 0
+LDF 1224	;load lambda @316
+LD 0 0
+LDF 123
+AP 2
+ST 0 2
+LD 0 2
+LD 2 2
+AP 1
+LDF 146
+AP 1
+ST 0 3
+LDF 1231	;load lambda @319
+LD 0 1
+LDF 100
+AP 2
+ST 0 3
+LD 4 4
+LD 0 3
+CONS
+JOIN
+LD 0 0	;lambda @322
+LD 0 0
+LD 4 1
+LDF 874
+AP 2
+LD 4 2
+LDF 884
+AP 3
+ST 4 2
+LDC 0
+RTN
+LD 0 0	;lambda @325
+LD 3 2
+AP 1
+LDF 146
+AP 1
+ST 5 1
+LD 5 1
+LD 5 1
+LD 4 2
+LDF 874
+AP 2
+LDC 10
+SUB
+LD 4 2
+LDF 884
+AP 3
+ST 4 2
+LDC 0
+RTN
+LD 0 0	;lambda @332
+LD 0 0
+LD 4 2
+LDF 874
+AP 2
+LDC 0
+LD 4 0
+AP 1
+LDC 15
+LDF 4
+AP 2
+ADD
+LD 4 2
+LDF 884
+AP 3
+ST 4 2
+LDC 0
+RTN
+LD 0 0	;lambda @343
+LD 0 0
+LD 5 2
+LDF 874
+AP 2
+LDC 30
+LD 0 0
+LD 5 1
+LDF 874
+AP 2
+LDC 6
+LDF 24
+AP 2
+MUL
+ADD
+LD 5 2
+LDF 884
+AP 3
+ST 5 2
+LDC 0
+RTN
+LD 0 0	;lambda @341
+LDC 5
+LD 2 1
+AP 2
+LDF 1308	;load lambda @343
+LD 1 1
+LDF 187
+AP 2
+ST 5 3
+LDC 0
+RTN
+LDF 1329	;load lambda @341
+LD 0 4
+LDF 187
+AP 2
+JOIN
+LD 0 0	;lambda @353
+LD 0 0
+LD 5 2
+LDF 874
+AP 2
+LDC 30
+LDC 7
+LD 0 0
+LD 5 1
+LDF 874
+AP 2
+LDC 6
+LDF 24
+AP 2
+SUB
+MUL
+ADD
+LD 5 2
+LDF 884
+AP 3
+ST 5 2
+LDC 0
+RTN
+LD 0 0	;lambda @351
+LDC 5
+LD 2 1
+AP 2
+LDF 1345	;load lambda @353
+LD 1 1
+LDF 187
+AP 2
+ST 5 3
+LDC 0
+RTN
+LDF 1368	;load lambda @351
+LD 0 4
+LDF 187
+AP 2
+JOIN
+LD 0 0	;lambda @362
+LD 4 2
+LDF 874
+AP 2
+RTN
+LD 0 0	;lambda @364
+LD 1 3
+LDF 55
+AP 2
+RTN
+LDF 1260	;load lambda @322
+LD 0 1
+LDF 187
+AP 2
+ST 4 3
+LDF 1271	;load lambda @325
+LD 0 5
+LDF 187
+AP 2
+ST 4 3
+LDF 1290	;load lambda @332
+LD 0 1
+LDF 187
+AP 2
+ST 4 3
+LD 3 4
+LDC 400
+CGT
+SEL 1340 1379
+ST 4 3
+LDF 1384	;load lambda @362
+LD 0 1
+LDF 280
+AP 2
+ST 0 3
+LDF 1389	;load lambda @364
+LD 0 1
+LDF 100
+AP 2
+ST 0 3
+LD 4 4
+LD 0 3
+CONS
+JOIN
+LDF 1209	;load lambda @308
+LD 3 6
+LDF 251
+AP 2
+ST 0 4
+LDF 1217	;load lambda @310
+LD 0 0
+LDF 251
+AP 2
+ST 0 5
+LD 0 4
+LDF 33
+AP 1
+LD 0 5
+LDF 33
+AP 1
+LDF 37
+AP 2
+SEL 1236 1394
+RTN
+DUM 6
+LD 3 5
+LDC 5
+LD 1 1
+AP 2
+LD 3 5
+LDF 815
 AP 1
 LDC 0
 LDC 0
-LDF 144
-RAP 5
+LDF 51
+AP 0
+LDF 51
+AP 0
+LDF 1428
+RAP 6
 RTN
-LD 2 4
-ST 2 3
-JOIN
-LDC 0
-DBUG
-JOIN
-LD 0 0
-LDC 2
-CEQ
-LD 0 0
-LDC 3
-CEQ
-ADD
-LDC 0
-CGT
-SEL 111 114
-LD 2 4
-LDC 1
-ADD
-ST 2 4
-LDC 0
+DUM 2
+LDF 1167	;load lambda @290
+LDF 1189	;load lambda @294
+LDF 1448
+RAP 2
 RTN
-DUM 1	;lambda @27
-LD 2 0
+DUM 3
+LDF 1027	;load lambda @237
+LDF 1114	;load lambda @261
+LDF 1154	;load lambda @282
+LDF 1465
+RAP 3
+RTN
+DUM 7
+LDF 924	;load lambda @227
+LDC 0
 LD 1 0
-CAR
-LD 1 0
-CDR
-LDF 20
-AP 3
-LDF 117
-RAP 1
-RTN
-LD 0 2
-LDC 4
-LDF 28
+LDF 861
 AP 2
-ST 0 3
-LDF 133	;load lambda @27
-LD 0 1
-CDR
-LD 0 1
-CAR
-LDF 36
+LDC 0
+LD 1 0
+LDF 861
+AP 2
+LDC 0
+LD 1 0
+LDF 68
+AP 2
+LDC 1
+LDC 1
+LD 1 0
+LDF 68
 AP 2
 LDF 68
 AP 2
-LD 0 2
-LD 0 3
-CONS
-RTN
-LDC 0	; function pseudo-field
 LDC 0
-LDC 0
-LDC 0
-CONS
-CONS
-CONS
+LDC 1
+LD 1 0
+LDF 68
+AP 2
+LDF 68
+AP 2
+LDF 936	;load lambda @234
 LDC 2
-LDC 5
-LDC 2
-LDC 0
-CONS
-CONS
-CONS
-LDC 0
-LDC 0
-LDC 0
-LDC 0
-CONS
-CONS
-CONS
-LDC 0
-CONS
-CONS
-CONS
+LD 1 0
+LDF 68
+AP 2
+LDF 187
+AP 2
+LDF 1471
+RAP 7
 RTN

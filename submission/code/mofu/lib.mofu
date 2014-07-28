@@ -1,0 +1,34 @@
+;stack
+mov c, 0
+
+;push
+mov [c], a
+inc c
+mov [c], b
+inc c
+
+;pop
+dec c
+mov b, [c]
+dec c
+mov a, [c]
+
+
+;while loop
+start:
+;hogehoge
+
+jeq @end, 1, 1
+jeq @start, 1, 1
+end:
+
+;for loop
+mov h, 0
+;hogehoge
+start:
+
+jlt @end, h, 255
+inc h
+jeq @start,1,1s
+
+end:

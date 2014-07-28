@@ -5,9 +5,7 @@
 - code: Code used to generate AI
 
 ## Main Strategy of Lambda-Man AI
-Lambda-man AI just looks four-neighbors of him and seeks for pill.
-If any pill is found, it goes to that direction; otherwise it moves
-randomly.
+UCT Algorithm.
 
 ## Main Stratregy of Ghost AI
 Ghost AI generally traces Lambda-man.
@@ -31,3 +29,5 @@ It has just two functionality: replace constants and resolve jump
 addresses.
 Despite of its simplisity, it is amazingly helpful.
 Preprocessor is code/bin/tippy.rb and the DSL is in code/mofu .
+
+./bin/rize.rb and ./bin/syaro.rb are GCC emulator.

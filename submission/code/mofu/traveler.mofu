@@ -1,13 +1,37 @@
-;direction
-.const up 0
-.const right 1
-.const down 2
-.const left 3
+;a
+;b
+;c
+;d
+;e
+;f ring_buffer
+;g iterator
+;h ring_buffer
+
+
+;ring_buffer_for_prophet
+;range [0]~[10]
+.const size 10
+.const half 5
+.const dt 5
+.const div_dt 4
+;.const count 220
+
+;ring_buffer_for_junction
+;range [100]~[110]
+.const junction_array_begin 100
+.const junction_array_end 120
+.const length 20
+;.const buffer_end 221 
 
 
 
+;tmp variable
+.const tmp 200
+.const buf 201
 
-
+;array_property
+.const count 220
+.const buffer_end 221 
 ;vector
 .const vx 230
 .const vx_d 231
@@ -23,14 +47,10 @@
 .const fourth 243
 .const fifth 244
 
-;ring_buffer
-.const size 10
-.const half 5
-.const dt 5
-.const div_dt 4
-.const count 248
+
 ;state
-.const tmp 247
+.const visited 246
+.const edges 247
 .const prev_x 248
 .const prev_y 249
 .const px 250;lambda man's x
@@ -39,6 +59,18 @@
 .const w 253;way
 .const x 254;current x position
 .const y 255;current y position
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;direction
+.const up 0
+.const right 1
+.const down 2
+.const left 3
+
+
+
+
 
 
 
@@ -52,14 +84,65 @@ mov [$px],a
 mov [$py],b
 
 
-;fillin
+;reset_edge_count
+mov [$edges], 0
+;check_f_is_not_zero
+jgt @junction_check,f,0
+	mov f, $junction_array_begin
+	mov [$buffer_end], $junction_array_begin
+junction_check:
+mov [$tmp], 0
+junc_for:
+;{
+	;copy x,y
+	mov a, [$x]
+	mov b, [$y]
+	;one move
+	jeq @junc_ue, [$tmp],0
+	jeq @junc_migi, [$tmp],1
+	jeq @junc_shita, [$tmp],2
+	;junc_hidari
+		dec a
+		jeq @junc_check, 1,1
+	junc_migi:
+		inc a
+		jeq @junc_check, 1,1
+	junc_ue:
+		dec b
+		jeq @junc_check, 1,1
+	junc_shita:
+		inc b
+	
+	
+	junc_check:
+		int 7
+		inc [$tmp]
+		jeq @wall, a, 0 
+			inc [$edges]
+		wall:
+;}
+jlt @junc_for, [$tmp], 4
+jlt @fillin, [$edges], 3
+
+;if_junction_then_update
+	jlt @junction_push, f,$junction_array_end
+		mov f, $junction_array_begin
+	junction_push:
+	mov [f],[$x]
+	inc f
+	mov [f],[$y]
+	inc f
+	jeq @start_fillin, [$buffer_end], $junction_array_end
+		add [$buffer_end],2
+
+start_fillin:
 jeq @filled, [$count],$size
 	mov h, 0
 ;for{
 	fillin:
-	mov [h],a
+	mov [h],[$x]
 	inc h
-	mov [h],b
+	mov [h],[$y]
 	inc h
 	jlt @fillin, h, $size
 	;}
@@ -86,17 +169,10 @@ mov [$tmp] , h ;h is mod position
 div [$tmp],$size
 mul [$tmp], $size
 sub h,[$tmp]
-mov [h],a
+mov [h],[$x]
 inc h
-mov [h],b
+mov [h],[$y]
 inc h
-
-
-;mov a, [$px]
-;mov b, [$py]
-;mov c, [$prev_x]
-;mov d, [$prev_y]
-
 
 ;distance_update
 jgt @prev_x_than,[$px],[$prev_x]
@@ -179,18 +255,39 @@ mov [$first], [$vy_d]
 mov [$second], [$vx_d]
 mov [$third], [$vx_d]
 mov [$fourth],[$vy_d]
-
 xor:
 xor [$third],2
 xor [$fourth],2
 
+jlt @start_move, [$edges],3
+	mov e, $junction_array_begin
+	mov [$visited], 0
+	junction_array_check_loop:
+	mov [$tmp],[e]
+	inc e
+	mov [$buf],[e]
+	inc e
+
+	jlt @pass, [$tmp], [$x]
+	jgt @pass, [$tmp], [$x]
+	jlt @pass, [$buf], [$y]
+	jgt @pass, [$buf], [$y]
+		inc [$visited]
+	pass:
+	jlt @junction_array_check_loop, e, [$buffer_end]
+
+jlt @start_move, [$visited], 3
+	xor [$first],1
+	xor [$second],1
+	xor [$third],1
+	xor [$fourth],1
+start_move:
 mov g, $first
 for:
 ;{
 	;copy x,y
 	mov a, [$x]
 	mov b, [$y]
-	;mov c, [d]
 	
 	;one move
 	jeq @ue, [g],0
@@ -217,8 +314,7 @@ for:
 		inc g
 ;}
 jlt @for, g, $fifth
+
+
 move:
 int 0
-
-
-
