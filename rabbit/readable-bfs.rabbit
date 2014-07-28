@@ -51,8 +51,7 @@
                 (if (> halfsize n)
                   (rec (car t) n (/ halfsize 2))
                   (rec (cdr t) (- n halfsize) (/ halfsize 2)))))))
-   (begin
-     (rec (raw-tree-of tree) n (/ (size-of-t tree) 2)))
+     (rec (raw-tree-of tree) n (/ (size-of-t tree) 2))
    ))
 (define (set-nth-of-t n v tree)
   (let ((rec (lambda (t n halfsize)
@@ -156,9 +155,6 @@
 (define (set-cell pos v table)
   (set-nth-of-t (car pos) (set-nth-of-t (cdr pos) v (get-nth-of-t (car pos) table)) table))
 
-;(define (set-field field i j x)
-;  (set-tree field i (set-tree (read-tree field i 16) j x 16) 16))
-
 ;{{{
 ;(define (pseudo-field)
 ;    (cons (cons 0 (cons 0 (cons 0 0)))
@@ -202,18 +198,13 @@
                       (set! trash (map
                         (lambda (npos)
                           (let ((dd (get-cell npos dist)))
-                            (begin
-                                ;(void 206)
-                                ;(void npos)
-                                ;(void dd)
-                                ;(void dist)
                             (if (and (> dd d) (not (= 0 (get-cell npos field))))
                               (begin
                                 (set! nq (push-q npos nq))
                                 (set! dist (set-cell npos d dist))
                                 0
                                 )
-                              0 )))) (adjacent pos)))
+                              0 ))) (adjacent pos)))
                       (cons pos (bfs nq))))))))
           (restore (lambda (pos)
                      (let ((d (dec (get-cell pos dist))))
@@ -231,20 +222,16 @@
          (res 0)
         )
         (begin
-          ;(void bfs-order)
          (set! objective (search-elem (lambda (pos)
                                   (let ((v (get-cell pos field)))
                                     (or (= v 2) (= v 3)))
                                   ) bfs-order))
-          ;(void dist)
          (set! res (last (restore objective)))
          (set! res (search-idx (lambda (pos)
                              (and (= (car pos) (car res)) (= (cdr pos) (cdr res)))
                                 )
                            (adjacent lambda-pos)))
-         ;;(void res)
          (cons 0 res)
-        ;(cons 0 0)
         )))
      ))))
 
