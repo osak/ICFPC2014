@@ -229,36 +229,6 @@ jeq @start_move,1,1
 ;ghost is not at junction
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 distance_update:
-jgt @prev_x_than,[$px],[$prev_x]
-mov [$dxdt], [$prev_x]
-sub [$dxdt], [$px]
-mul [$dxdt], $dt
-div [$dxdt], $div_dt
-sub [$x], [$dxdt]
-jeq @x_updated,1,1
-prev_x_than:
-mov [$dxdt], [$px]
-sub [$dxdt], [$prev_x]
-mul [$dxdt], $dt
-div [$dxdt], $div_dt
-add [$px], [$dxdt] 
-x_updated:
-
-jgt @prev_y_than,[$py],[$prev_y]
-mov [$dydt], [$prev_y]
-sub [$dydt], [$py]
-mul [$dydt], $dt
-div [$dydt], $div_dt
-sub [$py], [$dydt]
-jeq @vy_determined,1,1
-prev_y_than:
-mov [$dydt], [$py]
-sub [$dydt], [$prev_y]
-mul [$dydt], $dt
-div [$dydt], $div_dt
-add [$py], [$dydt]
-y_updated:
-
 ;vector check
 jgt @vx_than,[$x],[$px]
 mov [$vx], [$px]
