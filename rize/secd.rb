@@ -2,6 +2,7 @@ require_relative 'frame'
 require_relative 'call_frame'
 require_relative 'closure'
 require_relative 'control'
+require_relative 'cons'
 
 module Rize
   class SECDMachine
@@ -15,6 +16,7 @@ module Rize
     def load(insts)
       @insts = insts
       @pc = 0
+      @call_stack.push(Control.new(:stop, -1))
     end
 
     def execute!
@@ -141,7 +143,7 @@ module Rize
           end
           @pc += 1
         end
-      rescue
+      rescue SECDException
         return :error
       end
       :stop
@@ -185,7 +187,10 @@ module Rize
 
     def error(message)
       STDERR.puts("#{@pc}(#{@insts[@pc]}): #{message}")
-      raise
+      raise SECDException.new
     end
+  end
+
+  class SECDException < Exception
   end
 end
