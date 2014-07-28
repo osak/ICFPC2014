@@ -92,7 +92,7 @@ module Rize
             push_value(a.cdr)
           when :sel
             cond = pop_value(Integer)
-            next_pc = cond ? inst.args[0] : inst.args[1]
+            next_pc = (cond != 0) ? inst.args[0] : inst.args[1]
             push_call(Control.new(:join, @pc))
             @pc = next_pc - 1
           when :join
@@ -180,7 +180,7 @@ module Rize
     def pop_value(type = nil)
       error "Value stack is empty" if @value_stack.empty?
       val = @value_stack.pop
-      error "Type mismatch" if type && !(type === val)
+      error "Type mismatch (popped = #{val})" if type && !(type === val)
       val
     end
 
