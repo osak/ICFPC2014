@@ -183,7 +183,7 @@ end
 state = step.car
 loop do
   ret = trap_machine do
-    machine.call(step.cdr, state, Rize::Cons.new(nil, nil))
+    machine.call(step.cdr, state, game.encode)
   end
   if ret == :stop
     res = machine.value_stack.last
@@ -198,6 +198,7 @@ loop do
     game.move(res.cdr)
     print "\033[0;0H"
     puts game.to_s
+    puts "#{machine.step_count} steps"
   end
 end
 
