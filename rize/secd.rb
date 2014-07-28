@@ -6,7 +6,7 @@ require_relative 'cons'
 
 module Rize
   class SECDMachine
-    attr_reader :value_stack, :call_stack, :pc
+    attr_reader :value_stack, :call_stack, :pc, :step_count
     def initialize
       @value_stack = []
       @call_stack = []
@@ -16,10 +16,25 @@ module Rize
     def load(insts)
       @insts = insts
       @pc = 0
-      @call_stack.push(Control.new(:stop, -1))
+      @value_stack = []
+      @call_stack = [Control.new(:stop, -1)]
+      self.current_frame = nil
+    end
+
+    def call(closure, *args)
+      frame = Frame.new(args.size, closure.frame)
+      args.each_with_index do |arg, i|
+        frame[i] = arg
+      end
+      self.current_frame = frame
+      @value_stack = []
+      @call_stack = [Control.new(:stop, -1)]
+      @pc = closure.pc
+      execute!
     end
 
     def execute!
+      @step_count = 0
       begin
         loop do
           inst = @insts[@pc]
@@ -78,7 +93,7 @@ module Rize
             push_value(a.cdr)
           when :sel
             cond = pop_value(Integer)
-            next_pc = cond ? inst.args[0] : inst.args[1]
+            next_pc = (cond != 0) ? inst.args[0] : inst.args[1]
             push_call(Control.new(:join, @pc))
             @pc = next_pc - 1
           when :join
@@ -142,6 +157,7 @@ module Rize
             return :break
           end
           @pc += 1
+          @step_count += 1
         end
       rescue SECDException
         return :error
@@ -166,7 +182,7 @@ module Rize
     def pop_value(type = nil)
       error "Value stack is empty" if @value_stack.empty?
       val = @value_stack.pop
-      error "Type mismatch" if type && !(type === val)
+      error "Type mismatch (popped = #{val})" if type && !(type === val)
       val
     end
 
