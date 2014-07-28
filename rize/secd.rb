@@ -16,7 +16,9 @@ module Rize
     def load(insts)
       @insts = insts
       @pc = 0
-      @call_stack.push(Control.new(:stop, -1))
+      @value_stack = []
+      @call_stack = [Control.new(:stop, -1)]
+      self.current_frame = nil
     end
 
     def execute!
