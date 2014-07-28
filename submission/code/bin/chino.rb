@@ -2,19 +2,19 @@
 
 require 'optparse'
 require 'pp'
-require_relative '../compiler/parser.rb'
-require_relative '../compiler/compiler.rb'
-require_relative '../compiler/compiler_exception.rb'
+require_relative '../chino/parser.rb'
+require_relative '../chino/compiler.rb'
+require_relative '../chino/compiler_exception.rb'
 
 def parse(src)
   begin
-    parser = GCC::Parser.new(src)
-    compiler = GCC::Compiler.new
+    parser = Chino::Parser.new(src)
+    compiler = Chino::Compiler.new
     ast = parser.parse
     ast.each{|a| compiler.register(a)}
 
     puts compiler.to_gcc.join("\n")
-  rescue GCC::CompilerException => e
+  rescue Chino::CompilerException => e
     STDERR.puts "#{e}"
     if e.context
       STDERR.puts "  context: #{e.context} at line #{e.context.line_no}"
