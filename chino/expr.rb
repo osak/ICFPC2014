@@ -1,4 +1,4 @@
-module GCC
+module Chino
   class Expression
     attr_reader :args, :line_no
 

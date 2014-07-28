@@ -1,7 +1,7 @@
 require_relative 'environment'
 require_relative 'compiler_exception'
 
-module GCC
+module Chino
   class Compiler
     def initialize
       @subroutines = {}
