@@ -3,7 +3,7 @@ module Rize
     attr_reader :pc, :frame
     def initialize(pc, frame)
       @pc = pc
-      @frame = @frame
+      @frame = frame
     end
 
     def to_s
