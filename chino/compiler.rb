@@ -224,8 +224,8 @@ module Chino
     def compile_variable(name)
       if current_env && spec = current_env.get(name)
         ["LD #{spec[:frame]} #{spec[:index]}"]
-      elsif addr = @toplevel_func[name][:tag]
-        ["LDF #{addr}"]
+      elsif addr = @toplevel_func[name]
+        ["LDF #{addr[:tag]}"]
       else
         error("Unbound name '#{name}'", nil)
       end
