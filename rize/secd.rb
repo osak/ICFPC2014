@@ -6,7 +6,7 @@ require_relative 'cons'
 
 module Rize
   class SECDMachine
-    attr_reader :value_stack, :call_stack, :pc
+    attr_reader :value_stack, :call_stack, :pc, :step_count
     def initialize
       @value_stack = []
       @call_stack = []
@@ -34,6 +34,7 @@ module Rize
     end
 
     def execute!
+      @step_count = 0
       begin
         loop do
           inst = @insts[@pc]
@@ -156,6 +157,7 @@ module Rize
             return :break
           end
           @pc += 1
+          @step_count += 1
         end
       rescue SECDException
         return :error
