@@ -21,6 +21,18 @@ module Rize
       self.current_frame = nil
     end
 
+    def call(closure, *args)
+      frame = Frame.new(args.size, closure.frame)
+      args.each_with_index do |arg, i|
+        frame[i] = arg
+      end
+      self.current_frame = frame
+      @value_stack = []
+      @call_stack = [Control.new(:stop, -1)]
+      @pc = closure.pc
+      execute!
+    end
+
     def execute!
       begin
         loop do
