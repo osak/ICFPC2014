@@ -205,7 +205,7 @@ module Chino
           insts = compile(body)
           insts << "RTN"
           insts[0] += "\t; function #{args.args[0]}"
-          update_subroutine(@toplevel_func[f], insts)
+          update_subroutine(@toplevel_func[f][:tag], insts)
         end
       end
       code
@@ -224,7 +224,7 @@ module Chino
     def compile_variable(name)
       if current_env && spec = current_env.get(name)
         ["LD #{spec[:frame]} #{spec[:index]}"]
-      elsif addr = @toplevel_func[name]
+      elsif addr = @toplevel_func[name][:tag]
         ["LDF #{addr}"]
       else
         error("Unbound name '#{name}'", nil)
