@@ -1,10 +1,11 @@
 module Rize
   class Frame
-    attr_reader :parent
+    attr_reader :type, :parent
 
-    def initialize(size, parent)
+    def initialize(size, parent, type = :normal)
       @buf = Array.new(size)
       @parent = parent
+      @type = type
     end
 
     def [](index)
