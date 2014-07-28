@@ -277,20 +277,10 @@ jlt @start_move, [$edges],3
 	jlt @junction_array_check_loop, e, [$buffer_end]
 
 jlt @start_move, [$visited], 3
-	mov a, [$tmp]
-	mov b, [$tmp]
-	mov c, [$visited]
-	mov d, [$buffer_end]
-	int 8
 	xor [$first],1
 	xor [$second],1
 	xor [$third],1
 	xor [$fourth],1
-	mov a, [$first]
-	mov b, [$second]
-	mov c, [$third]
-	mov d, [$fourth]
-	int 8
 start_move:
 mov g, $first
 for:

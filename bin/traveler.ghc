@@ -122,7 +122,7 @@ mov [242], [231]
 mov [243],[233]
 xor [242],2
 xor [243],2
-jlt 152, [247],3
+jlt 142, [247],3
 mov e, 100
 mov [246], 0
 mov [200],[e]
@@ -135,38 +135,28 @@ jlt 136, [201], [255]
 jgt 136, [201], [255]
 inc [246]
 jlt 127, e, [221]
-jlt 152, [246], 3
-mov a, [200]
-mov b, [200]
-mov c, [246]
-mov d, [221]
-int 8
+jlt 142, [246], 3
 xor [240],1
 xor [241],1
 xor [242],1
 xor [243],1
-mov a, [240]
-mov b, [241]
-mov c, [242]
-mov d, [243]
-int 8
 mov g, 240
 mov a, [254]
 mov b, [255]
-jeq 162, [g],0
-jeq 160, [g],1
-jeq 164, [g],2
+jeq 152, [g],0
+jeq 150, [g],1
+jeq 154, [g],2
 dec a
-jeq 165, 1,1
+jeq 155, 1,1
 inc a
-jeq 165, 1,1
+jeq 155, 1,1
 dec b
-jeq 165, 1,1
+jeq 155, 1,1
 inc b
 int 7
 mov [200], a
 mov a, [g]
-jgt 171, [200], 0
+jgt 161, [200], 0
 inc g
-jlt 153, g, 244
+jlt 143, g, 244
 int 0
