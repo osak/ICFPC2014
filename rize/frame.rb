@@ -1,6 +1,7 @@
 module Rize
   class Frame
-    attr_reader :type, :parent
+    attr_reader :parent
+    attr_accessor :type
 
     def initialize(size, parent, type = :normal)
       @buf = Array.new(size)
