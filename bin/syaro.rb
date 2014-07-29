@@ -77,6 +77,10 @@ class Game
     args.reverse.reduce(0){|acc, val| Rize::Cons.new(val, acc)}
   end
 
+  def cleared?
+    !@field.any?{|row| row.any?{|i| i == 2 || i == 3}}
+  end
+
   def to_s
     str = ""
     @field.each_with_index do |row, y|
@@ -87,6 +91,8 @@ class Game
       str << row_str
       str << "\n"
     end
+    score = cleared? ? @lm.score * (@lm.lives+1) : @lm.score
+    str << "Score: #{score}"
     str
   end
 
