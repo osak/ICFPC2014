@@ -21,11 +21,11 @@ Implementing the EDITOR (not plugin) for the Mofu and GHC.
 Final submission are [mofu/tourist.mofu](https://github.com/osak/ICFPC2014/blob/master/mofu/tourist.mofu)
 and [mofu/traveler.mofu](https://github.com/osak/ICFPC2014/blob/master/mofu/traveler.mofu) .
 
-We implemented two types of AI, tourist and traveller.
+We implemented two types of AI, tourist and traveler.
 They generally calculate the relative position of the "target" and aims the "target".
 When they visited the same junction frequently, they changed the priority of the direction.
 The difference between these AI is "target" position.
-Traveller aims the present Lambda-man's position, but tourist aims the future Lambda-man's position.
+Traveler aims the present Lambda-man's position, but tourist aims the future Lambda-man's position.
 Future lambda-man's position was calculated from the difference between the present Lambda-man's position and past position of him.
 As a result, they will perform a pincer movement.
 
