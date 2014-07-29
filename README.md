@@ -8,7 +8,8 @@
 ## Strategy
 ### Lambda-man
 Implementing Scheme-like language (Rabbit) to write Lambda-man AI.
-Final submission is rabbit/uct.rabbit .
+Final submission is [rabbit/uct.rabbit](https://github.com/osak/ICFPC2014/blob/master/rabbit/uct.rabbit)
+(Despite of its name, it doesn't use UCT algorithm.)
 
 The AI performs breadth-first search to find pills then scores them by distance.
 It also consider nearby ghosts which affect with decreasing score on surrounding cells.
@@ -16,7 +17,8 @@ Then AI goes along to a highest-scored cell.
 
 ### Ghost
 Implementing macro preprocessor (Mofu) to write Ghost AIs.
-Final submission are mofu/tourist.mofu and mofu/traveler.mofu .
+Final submission are [mofu/tourist.mofu](https://github.com/osak/ICFPC2014/blob/master/mofu/tourist.mofu)
+and [mofu/traveler.mofu](https://github.com/osak/ICFPC2014/blob/master/mofu/traveler.mofu) .
 
 ## Files
 - bin/chino.rb
