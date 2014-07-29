@@ -2,6 +2,7 @@
 
 ## Members
 - @osa_k
+    + [Write-up](http://www.osak.jp/program/icfpc2014.html)
 - @Mi_Sawa
 - @camypaper
 
